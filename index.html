@@ -1,1180 +1,551 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HeartSpace – Share Your Story</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700;800&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeartSpace · pages flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-/* ===================== CSS VARIABLES ===================== */
-:root {
-  --bg:           #fdf8f2;
-  --warm-white:   #fffcf7;
-  --parchment:    #f5ead8;
-  --sand:         #e8d5b7;
-  --border:       #e0cdb8;
-  --border-light: #ede3d5;
-  --ink:          #2d1f0e;
-  --ink2:         #5c4530;
-  --muted:        #9a8470;
-  --rose:         #d4748a;
-  --rose-bg:      #fdeaea;
-  --sage:         #7a9e7e;
-  --sage-bg:      #e8f3e9;
-  --lavender:     #9b8bb4;
-  --lavender-bg:  #edeaf5;
-  --amber:        #e8a045;
-  --amber-bg:     #fef3de;
-  --sky:          #6aaed6;
-  --sky-bg:       #e8f3fb;
-  --brown:        #8b6f47;
-  --brown-dark:   #5c4530;
-}
+    :root {
+      --bg: #fcf5ef;
+      --surface: #fffaf5;
+      --ink: #1f2937;
+      --rose: #e6b2b8;
+      --rose-deep: #c97b8a;
+      --lavender: #cfc1e0;
+      --sage: #c0d6c0;
+      --muted: #735e51;
+      --border-light: #f0ded5;
+    }
 
-/* ===================== RESET ===================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'Nunito', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
-}
+    body {
+      background: var(--bg);
+      color: #2e2b28;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-/* ===================== BACKGROUND ===================== */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 700px 500px at 15% 40%, rgba(212,116,138,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 600px 400px at 85% 15%, rgba(155,139,180,0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 400px at 60% 85%, rgba(122,158,126,0.06) 0%, transparent 70%);
-}
+    /* top navigation tabs (page indicators) */
+    .tab-bar {
+      background: rgba(255, 250, 240, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #f0dacf;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .tab {
+      padding: 1rem 0.2rem 0.8rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #a48d7e;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s;
+    }
+    .tab i { font-size: 1rem; }
+    .tab.active {
+      color: #b35e71;
+      border-bottom-color: #d698a6;
+    }
+    .tab:hover { color: #7b5f4f; }
 
-.paper-lines {
-  background-image: repeating-linear-gradient(
-    transparent, transparent 31px,
-    rgba(224, 205, 184, 0.25) 31px, rgba(224, 205, 184, 0.25) 32px
-  );
-}
+    /* main panel where pages appear */
+    .page-container {
+      flex: 1;
+      padding: 2rem 2rem 3rem;
+      max-width: 700px;
+      margin: 0 auto;
+      width: 100%;
+      transition: opacity 0.2s ease;
+    }
 
-/* ===================== ANIMATIONS ===================== */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-@keyframes pulse-ring {
-  0%   { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.88) translateY(24px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-@keyframes confetti-fall {
-  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
+    /* each page (card style) */
+    .page-card {
+      background: var(--surface);
+      border-radius: 40px;
+      padding: 2.4rem 2.8rem;
+      box-shadow: 0 18px 36px -14px #decbbd;
+      border: 1px solid #ffeede;
+      animation: fadeSlide 0.3s ease;
+    }
+    @keyframes fadeSlide {
+      0% { opacity: 0.6; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-/* ===================== NAVBAR ===================== */
-.navbar {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(253, 248, 242, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 40px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 64px;
-  animation: fadeUp 0.4s ease;
-}
-.nav-logo {
-  font-family: 'Caveat', cursive;
-  font-size: 1.8rem; font-weight: 700;
-  color: var(--brown-dark);
-  text-decoration: none;
-  display: flex; align-items: center; gap: 8px;
-  letter-spacing: 0.3px;
-}
-.nav-logo .logo-heart { font-size: 1.4rem; }
-.nav-center {
-  display: flex; align-items: center; gap: 6px;
-}
-.nav-step {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 0.78rem; font-weight: 600; color: var(--muted);
-  padding: 4px 10px; border-radius: 20px;
-}
-.nav-step.done { color: var(--sage); }
-.nav-step.active { color: var(--rose); background: var(--rose-bg); }
-.nav-step-num {
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 1.5px solid currentColor;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.65rem; font-weight: 800;
-}
-.nav-step-sep { color: var(--border); font-size: 0.75rem; }
-.nav-right { display: flex; align-items: center; gap: 12px; }
-.autosave-badge {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 0.75rem; color: var(--muted); font-style: italic;
-  padding: 4px 10px; border-radius: 20px;
-  background: var(--parchment);
-}
-.autosave-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--sage); flex-shrink: 0;
-  animation: blink 2s infinite;
-}
-.autosave-dot.saving { background: var(--amber); }
-.btn-outline {
-  padding: 8px 18px; border-radius: 20px;
-  border: 1.5px solid var(--border); background: transparent;
-  color: var(--muted); font-family: 'Nunito', sans-serif;
-  font-size: 0.83rem; font-weight: 600; cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-outline:hover { border-color: var(--brown); color: var(--brown); background: var(--parchment); }
-.btn-primary {
-  padding: 9px 22px; border-radius: 20px;
-  border: none; background: var(--brown-dark);
-  color: white; font-family: 'Nunito', sans-serif;
-  font-size: 0.83rem; font-weight: 700; cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 3px 12px rgba(92,69,48,0.3);
-}
-.btn-primary:hover { background: var(--brown); transform: translateY(-1px); box-shadow: 0 5px 18px rgba(92,69,48,0.35); }
+    h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .sub {
+      color: #9b8477;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
 
-/* ===================== PROGRESS BAR ===================== */
-.progress-track {
-  height: 3px; background: var(--border-light); position: relative; z-index: 99;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--rose), var(--lavender), var(--sage));
-  width: 0%; transition: width 0.5s ease;
-}
+    /* form elements */
+    .field {
+      margin-bottom: 1.5rem;
+    }
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #ab9485;
+      margin-bottom: 0.4rem;
+    }
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1.5px solid #f0ddd2;
+      border-radius: 60px;
+      padding: 0.1rem 0.1rem 0.1rem 20px;
+    }
+    .input-wrapper i {
+      color: #c9b2a5;
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+    .input-wrapper input {
+      width: 100%;
+      border: none;
+      padding: 14px 18px 14px 6px;
+      background: transparent;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .input-wrapper input:focus { outline: none; }
 
-/* ===================== LAYOUT ===================== */
-.editor-layout {
-  position: relative; z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  min-height: calc(100vh - 67px);
-}
+    .btn {
+      background: #b58c89;
+      color: white;
+      border: none;
+      padding: 15px 28px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 8px 18px #e2c7bd;
+    }
+    .btn:hover { background: #a47370; transform: scale(1.01); }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #dbbfb3;
+      color: #644d40;
+      box-shadow: none;
+    }
+    .btn-outline:hover { background: #f7e5db; transform: none; }
 
-/* ===================== MAIN EDITOR ===================== */
-.editor-main {
-  padding: 44px 52px 80px;
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; gap: 28px;
-}
-.editor-hero { animation: fadeUp 0.5s ease both; }
-.hero-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--rose);
-  margin-bottom: 12px;
-}
-.hero-tag-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--rose); animation: blink 2s infinite;
-}
-.hero-title {
-  font-family: 'Lora', serif;
-  font-size: 2.1rem; font-weight: 700;
-  color: var(--brown-dark); line-height: 1.2;
-  margin-bottom: 10px;
-}
-.hero-sub {
-  font-size: 0.92rem; color: var(--muted);
-  line-height: 1.7; max-width: 480px;
-}
-.chapter-bar {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  animation: fadeUp 0.5s 0.08s ease both;
-}
-.chapter-label {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px;
-  text-transform: uppercase; color: var(--muted); margin-right: 4px;
-}
-.chapter-pill {
-  padding: 6px 16px; border-radius: 20px;
-  font-size: 0.8rem; font-weight: 700;
-  border: 1.5px solid var(--border);
-  background: white; color: var(--muted);
-  cursor: pointer; transition: all 0.2s;
-}
-.chapter-pill.active {
-  background: var(--brown-dark); border-color: var(--brown-dark);
-  color: white; box-shadow: 0 2px 10px rgba(92,69,48,0.25);
-}
-.chapter-pill:hover:not(.active) { border-color: var(--brown); color: var(--brown); }
-.add-chapter-btn {
-  font-size: 0.78rem; color: var(--muted); background: none; border: none;
-  font-family: 'Nunito', sans-serif; cursor: pointer;
-  text-decoration: underline; text-underline-offset: 2px;
-  transition: color 0.2s; padding: 0;
-}
-.add-chapter-btn:hover { color: var(--rose); }
-.title-area {
-  display: flex; flex-direction: column; gap: 0;
-  animation: fadeUp 0.5s 0.12s ease both;
-}
-.field-label {
-  font-size: 0.7rem; font-weight: 800; letter-spacing: 1.8px;
-  text-transform: uppercase; color: var(--sand);
-  margin-bottom: 6px;
-}
-.title-input {
-  width: 100%; font-family: 'Lora', serif;
-  font-size: 1.8rem; font-weight: 700;
-  color: var(--ink); background: transparent;
-  border: none; outline: none;
-  border-bottom: 2px solid var(--border);
-  padding: 6px 0 14px; line-height: 1.3;
-  transition: border-color 0.3s;
-}
-.title-input::placeholder { color: var(--sand); font-style: italic; font-weight: 400; }
-.title-input:focus { border-bottom-color: var(--rose); }
-.subtitle-input {
-  width: 100%; font-family: 'Lora', serif; font-size: 1rem; font-style: italic;
-  color: var(--muted); background: transparent;
-  border: none; outline: none;
-  border-bottom: 1px dashed var(--border-light);
-  padding: 8px 0 10px; transition: border-color 0.3s; margin-top: 10px;
-}
-.subtitle-input::placeholder { color: var(--sand); }
-.subtitle-input:focus { border-bottom-color: var(--lavender); }
-.toolbar-wrap { animation: fadeUp 0.5s 0.16s ease both; }
-.toolbar {
-  display: flex; align-items: center; gap: 3px;
-  padding: 10px 14px; background: var(--warm-white);
-  border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.04);
-}
-.toolbar-group { display: flex; align-items: center; gap: 2px; }
-.toolbar-sep { width: 1px; height: 22px; background: var(--border); margin: 0 6px; }
-.tb-btn {
-  width: 34px; height: 34px; border: none; background: transparent;
-  border-radius: 8px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.88rem; color: var(--muted);
-  transition: all 0.15s; font-family: 'Nunito', sans-serif; font-weight: 700;
-  position: relative;
-}
-.tb-btn:hover { background: var(--parchment); color: var(--brown); }
-.tb-btn.active { background: var(--rose-bg); color: var(--rose); }
-.tb-btn[data-tip]:hover::after {
-  content: attr(data-tip);
-  position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
-  background: var(--ink); color: white;
-  font-size: 0.68rem; padding: 3px 8px; border-radius: 6px; white-space: nowrap;
-  pointer-events: none; z-index: 999;
-  font-family: 'Nunito', sans-serif; font-weight: 600;
-}
-.toolbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.char-counter { font-size: 0.72rem; color: var(--muted); font-style: italic; }
-.editor-body-wrap {
-  flex: 1; position: relative;
-  animation: fadeUp 0.5s 0.2s ease both;
-}
-.story-textarea {
-  width: 100%; min-height: 400px;
-  background: var(--warm-white); border: 1.5px solid var(--border);
-  border-radius: 16px; padding: 32px 36px;
-  font-family: 'Lora', serif; font-size: 1.05rem;
-  color: var(--ink); line-height: 2;
-  outline: none; resize: vertical;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  background-image: repeating-linear-gradient(
-    transparent, transparent 39px,
-    rgba(224,205,184,0.3) 39px, rgba(224,205,184,0.3) 40px
-  );
-  background-attachment: local;
-}
-.story-textarea::placeholder { color: var(--sand); font-style: italic; line-height: 2; }
-.story-textarea:focus {
-  border-color: rgba(212,116,138,0.4);
-  box-shadow: 0 0 0 4px rgba(212,116,138,0.07), 0 4px 24px rgba(0,0,0,0.05);
-}
-.editor-footer-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 4px 0;
-}
-.word-stats { display: flex; align-items: center; gap: 16px; }
-.stat-item { font-size: 0.78rem; color: var(--muted); }
-.stat-item strong { color: var(--ink2); font-weight: 700; }
-.read-time { font-size: 0.78rem; color: var(--muted); font-style: italic; }
-.media-row {
-  display: flex; align-items: center; gap: 12px;
-  animation: fadeUp 0.5s 0.24s ease both;
-}
-.media-label { font-size: 0.78rem; color: var(--muted); }
-.media-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 14px; border-radius: 10px;
-  border: 1.5px dashed var(--border); background: transparent;
-  color: var(--muted); font-family: 'Nunito', sans-serif;
-  font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-}
-.media-btn:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-bg); }
-.media-btn .icon { font-size: 1rem; }
-.cw-section {
-  background: var(--warm-white); border: 1px solid var(--border);
-  border-radius: 14px; padding: 20px 24px;
-  animation: fadeUp 0.5s 0.28s ease both;
-}
-.cw-header {
-  font-size: 0.82rem; font-weight: 700; color: var(--ink2);
-  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
-}
-.cw-hint { font-weight: 400; font-size: 0.78rem; color: var(--muted); }
-.cw-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.cw-chip {
-  padding: 6px 14px; border-radius: 20px;
-  border: 1.5px solid var(--border); background: white;
-  font-size: 0.8rem; font-weight: 600; color: var(--muted);
-  cursor: pointer; transition: all 0.2s; font-family: 'Nunito', sans-serif;
-}
-.cw-chip:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-bg); }
-.cw-chip.selected { border-color: var(--amber); color: var(--amber); background: var(--amber-bg); }
-.schedule-row {
-  display: flex; align-items: center; gap: 14px;
-  animation: fadeUp 0.5s 0.32s ease both;
-}
-.schedule-label { font-size: 0.82rem; color: var(--muted); }
-.schedule-input {
-  padding: 7px 12px; border-radius: 10px;
-  border: 1.5px solid var(--border); background: white;
-  font-family: 'Nunito', sans-serif; font-size: 0.82rem;
-  color: var(--ink2); outline: none; transition: border-color 0.2s;
-}
-.schedule-input:focus { border-color: var(--lavender); }
-.schedule-clear {
-  font-size: 0.78rem; color: var(--muted); cursor: pointer;
-  text-decoration: underline; text-underline-offset: 2px;
-  border: none; background: none; font-family: 'Nunito', sans-serif;
-}
-.schedule-clear:hover { color: var(--rose); }
-.submit-section {
-  display: flex; flex-direction: column; gap: 12px;
-  animation: fadeUp 0.5s 0.36s ease both; padding-top: 4px;
-}
-.btn-publish {
-  width: 100%; padding: 16px;
-  background: linear-gradient(135deg, var(--rose) 0%, #b85a9a 100%);
-  color: white; border: none; border-radius: 14px;
-  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800;
-  cursor: pointer; letter-spacing: 0.3px;
-  box-shadow: 0 5px 24px rgba(212,116,138,0.4); transition: all 0.25s;
-}
-.btn-publish:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212,116,138,0.5); }
-.btn-draft-save {
-  width: 100%; padding: 13px; background: transparent; color: var(--ink2);
-  border: 1.5px solid var(--border); border-radius: 14px;
-  font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
-  cursor: pointer; transition: all 0.2s;
-}
-.btn-draft-save:hover { border-color: var(--sage); color: var(--sage); background: var(--sage-bg); }
-.btn-preview {
-  width: 100%; padding: 11px; background: transparent; color: var(--muted);
-  border: 1px dashed var(--border); border-radius: 14px;
-  font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-}
-.btn-preview:hover { border-color: var(--lavender); color: var(--lavender); }
-.publish-note { text-align: center; font-size: 0.74rem; color: var(--muted); line-height: 1.6; }
+    .link-row {
+      text-align: center;
+      margin-top: 1.4rem;
+      font-size: 0.9rem;
+    }
+    .link-row a {
+      color: #b4767e;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .link-row a:hover { text-decoration: underline; }
 
-/* ===================== SIDEBAR ===================== */
-.editor-sidebar {
-  background: #faf6f0; padding: 36px 28px;
-  display: flex; flex-direction: column; gap: 0; overflow-y: auto;
-}
-.sidebar-block {
-  padding-bottom: 26px; margin-bottom: 26px;
-  border-bottom: 1px solid var(--border-light);
-  animation: fadeUp 0.5s ease both;
-}
-.sidebar-block:nth-child(1) { animation-delay: 0.05s; }
-.sidebar-block:nth-child(2) { animation-delay: 0.1s; }
-.sidebar-block:nth-child(3) { animation-delay: 0.15s; }
-.sidebar-block:nth-child(4) { animation-delay: 0.2s; }
-.sidebar-block:nth-child(5) { animation-delay: 0.25s; }
-.sidebar-block:nth-child(6) { animation-delay: 0.3s; }
-.sidebar-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-.sb-label {
-  font-size: 0.7rem; font-weight: 800; letter-spacing: 1.8px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
-}
-.quote-block {
-  background: linear-gradient(135deg, var(--rose-bg), #fdf0f5);
-  border-left: 3px solid var(--rose); border-radius: 10px; padding: 16px 18px;
-  font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--ink2); line-height: 1.6;
-}
-.quote-block cite {
-  display: block; margin-top: 8px; font-family: 'Nunito', sans-serif;
-  font-style: normal; font-size: 0.73rem; color: var(--muted);
-}
-.emotion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.emotion-card {
-  display: flex; align-items: center; gap: 9px;
-  padding: 10px 12px; border-radius: 12px;
-  border: 1.5px solid var(--border); background: white;
-  cursor: pointer; transition: all 0.2s; font-family: 'Nunito', sans-serif;
-}
-.emotion-card:hover { transform: translateY(-1px); box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
-.emotion-card.selected { border-color: var(--rose); background: var(--rose-bg); }
-.emotion-card.selected.sage  { border-color: var(--sage); background: var(--sage-bg); }
-.emotion-card.selected.lav   { border-color: var(--lavender); background: var(--lavender-bg); }
-.emotion-card.selected.amber { border-color: var(--amber); background: var(--amber-bg); }
-.emotion-card.selected.sky   { border-color: var(--sky); background: var(--sky-bg); }
-.em-icon { font-size: 1.3rem; }
-.em-name { font-size: 0.8rem; font-weight: 700; color: var(--ink2); }
-.tags-box {
-  display: flex; flex-wrap: wrap; gap: 7px; background: white;
-  border: 1.5px solid var(--border); border-radius: 12px;
-  padding: 10px 12px; cursor: text; min-height: 50px; align-items: center;
-}
-.tag-item {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 10px; border-radius: 20px;
-  background: var(--rose-bg); color: var(--rose);
-  font-size: 0.78rem; font-weight: 700;
-}
-.tag-remove {
-  cursor: pointer; font-size: 0.9rem; line-height: 1; opacity: 0.6;
-  transition: opacity 0.15s; background: none; border: none; color: inherit; padding: 0;
-}
-.tag-remove:hover { opacity: 1; }
-.tag-input-field {
-  border: none; outline: none; background: transparent;
-  font-family: 'Nunito', sans-serif; font-size: 0.82rem;
-  color: var(--ink); min-width: 90px; flex: 1;
-}
-.tag-input-field::placeholder { color: var(--sand); }
-.tag-hint { font-size: 0.72rem; color: var(--muted); margin-top: 7px; }
-.anon-card {
-  display: flex; align-items: center; justify-content: space-between;
-  background: white; border: 1.5px solid var(--border);
-  border-radius: 12px; padding: 14px 16px; gap: 12px;
-}
-.anon-text h4 { font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
-.anon-text p  { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
-.toggle-track {
-  width: 44px; height: 24px; border-radius: 12px;
-  background: var(--border); cursor: pointer;
-  position: relative; transition: background 0.3s; flex-shrink: 0;
-}
-.toggle-track.on { background: var(--sage); }
-.toggle-thumb {
-  width: 18px; height: 18px; border-radius: 50%; background: white;
-  position: absolute; top: 3px; left: 3px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.2); transition: left 0.3s;
-}
-.toggle-track.on .toggle-thumb { left: 23px; }
-.vis-list { display: flex; flex-direction: column; gap: 8px; }
-.vis-card {
-  display: flex; align-items: center; gap: 12px; background: white;
-  border: 1.5px solid var(--border); border-radius: 12px;
-  padding: 12px 14px; cursor: pointer; transition: all 0.2s;
-}
-.vis-card:hover { border-color: var(--lavender); }
-.vis-card.selected { border-color: var(--lavender); background: var(--lavender-bg); }
-.vis-icon { font-size: 1.2rem; }
-.vis-text { flex: 1; }
-.vis-text h4 { font-size: 0.84rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
-.vis-text p  { font-size: 0.72rem; color: var(--muted); line-height: 1.3; }
-.vis-radio {
-  width: 16px; height: 16px; border-radius: 50%;
-  border: 2px solid var(--border); flex-shrink: 0; position: relative; transition: border-color 0.2s;
-}
-.vis-card.selected .vis-radio { border-color: var(--lavender); }
-.vis-card.selected .vis-radio::after {
-  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  width: 8px; height: 8px; border-radius: 50%; background: var(--lavender);
-}
-.tips-box {
-  background: linear-gradient(135deg, var(--sage-bg), #f0f8f0);
-  border: 1px solid rgba(122,158,126,0.3); border-radius: 14px; padding: 18px 20px;
-}
-.tips-box h4 { font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--sage); margin-bottom: 12px; }
-.tips-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
-.tips-list li {
-  font-size: 0.82rem; color: var(--ink2); line-height: 1.5;
-  display: flex; align-items: flex-start; gap: 7px;
-}
-.tips-list li::before { content: '✦'; color: var(--sage); font-size: 0.7rem; flex-shrink: 0; margin-top: 2px; }
+    hr { border: none; border-top: 1.5px dashed #e4cfc2; margin: 1.8rem 0; }
 
-/* ===================== MODAL ===================== */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 999;
-  background: rgba(45,31,14,0.55); backdrop-filter: blur(6px);
-  display: none; align-items: center; justify-content: center;
-}
-.modal-overlay.show { display: flex; }
-.modal-box {
-  background: white; border-radius: 24px; padding: 50px 44px;
-  max-width: 460px; width: 90%; text-align: center;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
-  animation: modalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.modal-hearts { font-size: 3rem; margin-bottom: 18px; line-height: 1; }
-.modal-title {
-  font-family: 'Lora', serif; font-size: 1.7rem; font-weight: 700;
-  color: var(--brown-dark); margin-bottom: 14px;
-}
-.modal-text { font-size: 0.92rem; color: var(--muted); line-height: 1.8; margin-bottom: 30px; }
-.modal-actions { display: flex; flex-direction: column; gap: 10px; }
-.modal-btn-main {
-  padding: 14px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--rose), #b85a9a);
-  color: white; border: none; font-family: 'Nunito', sans-serif;
-  font-size: 0.95rem; font-weight: 800; cursor: pointer;
-  box-shadow: 0 4px 18px rgba(212,116,138,0.4); transition: all 0.2s;
-}
-.modal-btn-main:hover { transform: translateY(-1px); }
-.modal-btn-sec {
-  padding: 12px; border-radius: 12px; background: transparent; color: var(--muted);
-  border: 1.5px solid var(--border); font-family: 'Nunito', sans-serif;
-  font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-}
-.modal-btn-sec:hover { border-color: var(--sage); color: var(--sage); background: var(--sage-bg); }
-.confetti-piece {
-  position: fixed; width: 10px; height: 10px;
-  border-radius: 2px; pointer-events: none; z-index: 1000;
-  animation: confetti-fall 2.5s ease-in forwards;
-}
+    /* social login mini */
+    .social-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .social-btn {
+      background: #f7eae2;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #5e4a3c;
+    }
 
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 960px) {
-  .editor-layout { grid-template-columns: 1fr; }
-  .editor-main { padding: 32px 28px 60px; }
-  .editor-sidebar { border-top: 1px solid var(--border); }
-  .nav-center { display: none; }
-}
-@media (max-width: 600px) {
-  .navbar { padding: 0 20px; }
-  .editor-main { padding: 24px 18px 48px; }
-  .editor-sidebar { padding: 28px 18px; }
-  .hero-title { font-size: 1.6rem; }
-  .title-input { font-size: 1.4rem; }
-  .story-textarea { padding: 22px 20px; }
-  .nav-logo { font-size: 1.5rem; }
-  .autosave-badge { display: none; }
-}
+    /* extra pages: welcome/onboarding */
+    .pill-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 2rem 0;
+    }
+    .pill {
+      background: #f7ede7;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .pill.selected {
+      border-color: #c6848f;
+      background: #f8e2df;
+    }
 
-</style>
+    .hidden { display: none; }
+    .flex { display: flex; gap: 16px; }
+  </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="nav-logo" href="#">
-    <span class="logo-heart">💜</span> HeartSpace
-  </a>
-  <div class="nav-center">
-    <div class="nav-step done"><div class="nav-step-num">✓</div> Sign In</div>
-    <span class="nav-step-sep">›</span>
-    <div class="nav-step active"><div class="nav-step-num">2</div> Write Story</div>
-    <span class="nav-step-sep">›</span>
-    <div class="nav-step"><div class="nav-step-num">3</div> Publish</div>
-  </div>
-  <div class="nav-right">
-    <div class="autosave-badge" id="autosaveBadge">
-      <div class="autosave-dot" id="autosaveDot"></div>
-      <span id="autosaveText">Draft saved</span>
-    </div>
-    <button class="btn-outline" onclick="previewStory()">👁 Preview</button>
-    <button class="btn-primary" onclick="publishStory()">Publish →</button>
-  </div>
-</nav>
-
-<!-- PROGRESS BAR -->
-<div class="progress-track">
-  <div class="progress-fill" id="progressFill"></div>
+<!-- ========== TAB BAR (page navigation) ========== -->
+<div class="tab-bar" id="tabBar">
+  <div class="tab active" data-page="signin" onclick="switchPage('signin')"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</div>
+  <div class="tab" data-page="signup" onclick="switchPage('signup')"><i class="fas fa-user-plus"></i> Sign Up</div>
+  <div class="tab" data-page="welcome" onclick="switchPage('welcome')"><i class="fas fa-heart"></i> Welcome</div>
+  <div class="tab" data-page="emotion" onclick="switchPage('emotion')"><i class="fas fa-smile"></i> Your Vibe</div>
+  <div class="tab" data-page="story" onclick="switchPage('story')"><i class="fas fa-pen"></i> First Story</div>
+  <div class="tab" data-page="feed" onclick="switchPage('feed')"><i class="fas fa-stream"></i> Feed</div>
 </div>
 
-<!-- MAIN LAYOUT -->
-<div class="editor-layout">
+<!-- ========== PAGE CONTAINER (dynamic) ========== -->
+<div class="page-container" id="pageContainer">
+  <!-- sign in page (default visible) -->
+  <div id="signin-page" class="page-card">
+    <h2>welcome back <span style="font-family: Caveat;">💜</span></h2>
+    <div class="sub">sign in to continue your journey</div>
 
-  <!-- LEFT EDITOR -->
-  <div class="editor-main">
-
-    <div class="editor-hero">
-      <div class="hero-tag"><div class="hero-tag-dot"></div> Story Editor</div>
-      <h1 class="hero-title">Share your story with the world</h1>
-      <p class="hero-sub">Write as much or as little as you want. There's no right way to share. Your voice is enough — exactly as it is.</p>
+    <div class="field">
+      <label>email</label>
+      <div class="input-wrapper">
+        <i class="far fa-envelope"></i>
+        <input type="email" placeholder="you@example.com" id="signinEmail" value="hello@heart.space">
+      </div>
     </div>
-
-    <div class="chapter-bar">
-      <span class="chapter-label">Chapters</span>
-      <div class="chapter-pill active" onclick="selectChapter(this)">Chapter 1</div>
-      <button class="add-chapter-btn" onclick="addChapter()">+ Add chapter</button>
-    </div>
-
-    <div class="title-area">
-      <label class="field-label">Story Title</label>
-      <input class="title-input" type="text" id="storyTitle"
-        placeholder="Give your story a title…"
-        oninput="updateStats(); updateProgress()" autocomplete="off" spellcheck="true">
-      <input class="subtitle-input" type="text" id="storySubtitle"
-        placeholder="A short line to describe your story (optional)…" autocomplete="off">
-    </div>
-
-    <div class="toolbar-wrap">
-      <div class="toolbar">
-        <div class="toolbar-group">
-          <button class="tb-btn" data-tip="Bold" onclick="fmt('bold')"><b>B</b></button>
-          <button class="tb-btn" data-tip="Italic" onclick="fmt('italic')"><i>I</i></button>
-          <button class="tb-btn" data-tip="Underline" onclick="fmt('underline')"><u>U</u></button>
-          <button class="tb-btn" data-tip="Strikethrough" onclick="fmt('strikethrough')" style="text-decoration:line-through;">S</button>
-        </div>
-        <div class="toolbar-sep"></div>
-        <div class="toolbar-group">
-          <button class="tb-btn" data-tip="Heading" onclick="fmt('heading')" style="font-size:0.8rem;font-weight:800;">H</button>
-          <button class="tb-btn" data-tip="Blockquote" onclick="fmt('quote')" style="font-size:1.3rem;font-family:'Lora',serif;line-height:1;">"</button>
-          <button class="tb-btn" data-tip="Bullet list" onclick="fmt('list')" style="font-size:1.1rem;">•</button>
-          <button class="tb-btn" data-tip="Divider" onclick="fmt('divider')">—</button>
-        </div>
-        <div class="toolbar-sep"></div>
-        <div class="toolbar-group">
-          <button class="tb-btn" data-tip="Align left" onclick="fmt('left')" style="letter-spacing:-1px;">≡</button>
-          <button class="tb-btn" data-tip="Align center" onclick="fmt('center')" style="letter-spacing:-1px;">≡</button>
-        </div>
-        <div class="toolbar-sep"></div>
-        <div class="toolbar-group">
-          <button class="tb-btn" data-tip="Undo" onclick="document.execCommand('undo')">↩</button>
-          <button class="tb-btn" data-tip="Redo" onclick="document.execCommand('redo')">↪</button>
-        </div>
-        <div class="toolbar-right">
-          <span class="char-counter" id="charCounter">0 chars</span>
-        </div>
+    <div class="field">
+      <label>password</label>
+      <div class="input-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="••••••••" id="signinPass" value="secret">
       </div>
     </div>
 
-    <div class="editor-body-wrap">
-      <textarea class="story-textarea" id="storyBody" rows="18"
-        placeholder="Begin your story here…&#10;&#10;Maybe it starts with a feeling. Maybe with a moment in time. Maybe with a sentence that's been living inside your chest for years.&#10;&#10;Whatever it is — this space is yours. Write freely. No rules. No judgment."
-        oninput="updateStats(); updateProgress(); triggerAutosave()"
-        spellcheck="true"></textarea>
-    </div>
+    <button class="btn" onclick="fakeSignIn()"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
 
-    <div class="editor-footer-bar">
-      <div class="word-stats">
-        <span class="stat-item"><strong id="wordCount">0</strong> words</span>
-        <span class="stat-item"><strong id="charCount">0</strong> characters</span>
-        <span class="stat-item"><strong id="paraCount">0</strong> paragraphs</span>
-      </div>
-      <div class="read-time" id="readTime">~1 min read</div>
+    <div class="link-row">
+      <span style="color:#ac9284;">no account?</span> <a onclick="switchPage('signup')">create one →</a>
     </div>
-
-    <div class="media-row">
-      <span class="media-label">Add to your story:</span>
-      <button class="media-btn" onclick="triggerFileUpload('image')">
-        <span class="icon">🖼️</span> Image
-      </button>
-      <button class="media-btn" onclick="triggerFileUpload('audio')">
-        <span class="icon">🎙️</span> Voice Note
-      </button>
-      <button class="media-btn" onclick="addYoutubeEmbed()">
-        <span class="icon">🎥</span> Video Link
-      </button>
-      <input type="file" id="fileUpload" style="display:none" onchange="handleFileUpload(event)">
+    <hr>
+    <div class="social-buttons">
+      <div class="social-btn"><i class="fab fa-google"></i> Google</div>
+      <div class="social-btn"><i class="fab fa-apple"></i> Apple</div>
     </div>
-
-    <div class="cw-section">
-      <div class="cw-header">
-        ⚠️ Content Warnings
-        <span class="cw-hint">— Helps readers prepare themselves</span>
-      </div>
-      <div class="cw-grid">
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">😢 Grief & Loss</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">🧠 Mental Health</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">💔 Trauma</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">💑 Relationships</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">👨‍👩‍👧 Family</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">🍃 Addiction</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">🏥 Illness</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">🏳️‍🌈 Identity</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">💼 Career</button>
-        <button class="cw-chip" onclick="this.classList.toggle('selected')">✅ No warnings needed</button>
-      </div>
-    </div>
-
-    <div class="schedule-row">
-      <span class="schedule-label">📅 Schedule publish (optional):</span>
-      <input type="datetime-local" class="schedule-input" id="scheduleDate">
-      <button class="schedule-clear" onclick="document.getElementById('scheduleDate').value=''">Clear</button>
-    </div>
-
-    <div class="submit-section">
-      <button class="btn-publish" onclick="publishStory()">💜 Publish My Story</button>
-      <button class="btn-draft-save" onclick="saveDraft()">💾 Save as Draft</button>
-      <button class="btn-preview" onclick="previewStory()">👁 Preview before publishing</button>
-      <p class="publish-note">Your story will be shared with care and kindness.<br>You can edit or delete it at any time after publishing.</p>
-    </div>
-
   </div>
 
-  <!-- RIGHT SIDEBAR -->
-  <div class="editor-sidebar">
+  <!-- sign up page (hidden initially) -->
+  <div id="signup-page" class="page-card hidden">
+    <h2>join HeartSpace</h2>
+    <div class="sub">share your story, find your people</div>
 
-    <div class="sidebar-block">
-      <div class="sb-label">💬 Today's Reminder</div>
-      <div class="quote-block" id="quoteBlock">
-        "Your story matters. Every scar, every stumble, every quiet victory — it all matters."
-        <cite>— HeartSpace Community</cite>
+    <div class="field">
+      <label>display name</label>
+      <div class="input-wrapper">
+        <i class="far fa-user"></i>
+        <input type="text" placeholder="Alex" id="signupName">
+      </div>
+    </div>
+    <div class="field">
+      <label>email</label>
+      <div class="input-wrapper">
+        <i class="far fa-envelope"></i>
+        <input type="email" placeholder="alex@example.com" id="signupEmail">
+      </div>
+    </div>
+    <div class="field">
+      <label>password</label>
+      <div class="input-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="at least 8 characters" id="signupPass">
+      </div>
+    </div>
+    <div class="field">
+      <label>confirm password</label>
+      <div class="input-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="" id="signupPass2">
       </div>
     </div>
 
-    <div class="sidebar-block">
-      <div class="sb-label">🎭 Primary Emotion</div>
-      <div class="emotion-grid">
-        <div class="emotion-card" onclick="selectEmotion(this,'grief','rose')"><span class="em-icon">😢</span><span class="em-name">Grief</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'healing','sage')"><span class="em-icon">🌱</span><span class="em-name">Healing</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'anxiety','lav')"><span class="em-icon">😰</span><span class="em-name">Anxiety</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'hope','amber')"><span class="em-icon">💛</span><span class="em-name">Hope</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'love','rose')"><span class="em-icon">❤️</span><span class="em-name">Love</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'anger','amber')"><span class="em-icon">😤</span><span class="em-name">Anger</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'peace','sky')"><span class="em-icon">🕊️</span><span class="em-name">Peace</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'lost','lav')"><span class="em-icon">🌀</span><span class="em-name">Lost</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'joy','amber')"><span class="em-icon">🌟</span><span class="em-name">Joy</span></div>
-        <div class="emotion-card" onclick="selectEmotion(this,'longing','sky')"><span class="em-icon">🌊</span><span class="em-name">Longing</span></div>
-      </div>
-    </div>
+    <button class="btn" onclick="fakeSignUp()"><i class="fas fa-user-plus"></i> Create Account</button>
 
-    <div class="sidebar-block">
-      <div class="sb-label">🏷️ Story Tags</div>
-      <div class="tags-box" id="tagsBox" onclick="document.getElementById('tagField').focus()">
-        <input class="tag-input-field" id="tagField"
-          placeholder="Type a tag and press Enter…"
-          onkeydown="handleTagInput(event)" autocomplete="off">
-      </div>
-      <div class="tag-hint">e.g. healing, mother, 2020, anxiety, secondchance</div>
+    <div class="link-row">
+      <span style="color:#ac9284;">already a member?</span> <a onclick="switchPage('signin')">sign in</a>
     </div>
-
-    <div class="sidebar-block">
-      <div class="sb-label">👤 Identity</div>
-      <div class="anon-card">
-        <div class="anon-text">
-          <h4>Post Anonymously</h4>
-          <p id="anonDesc">Your real name will be shown on this story</p>
-        </div>
-        <div class="toggle-track" id="anonToggle" onclick="toggleAnon()">
-          <div class="toggle-thumb"></div>
-        </div>
-      </div>
+    <hr>
+    <div class="social-buttons">
+      <div class="social-btn"><i class="fab fa-google"></i> Sign up with Google</div>
     </div>
-
-    <div class="sidebar-block">
-      <div class="sb-label">🌍 Who Can Read This?</div>
-      <div class="vis-list">
-        <div class="vis-card selected" onclick="selectVis(this)">
-          <span class="vis-icon">🌐</span>
-          <div class="vis-text"><h4>Everyone</h4><p>Shared with the whole HeartSpace community</p></div>
-          <div class="vis-radio"></div>
-        </div>
-        <div class="vis-card" onclick="selectVis(this)">
-          <span class="vis-icon">🤝</span>
-          <div class="vis-text"><h4>My Circles Only</h4><p>Visible to your support groups</p></div>
-          <div class="vis-radio"></div>
-        </div>
-        <div class="vis-card" onclick="selectVis(this)">
-          <span class="vis-icon">🔒</span>
-          <div class="vis-text"><h4>Private Journal</h4><p>Only you can see this story</p></div>
-          <div class="vis-radio"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="sidebar-block">
-      <div class="tips-box">
-        <h4>✦ A gentle reminder</h4>
-        <ul class="tips-list">
-          <li>Write for yourself first — others second</li>
-          <li>You don't need to justify your feelings</li>
-          <li>There's no right or wrong length</li>
-          <li>You can edit or delete this anytime</li>
-          <li>Someone needs your exact story today</li>
-          <li>Spelling and grammar don't matter here</li>
-        </ul>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<!-- SUCCESS MODAL -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal-box">
-    <div class="modal-hearts">💜🌿💜</div>
-    <h2 class="modal-title">Your story is out there.</h2>
-    <p class="modal-text">
-      Thank you for being brave enough to share. Your words just became part of a community that truly cares.<br><br>
-      Someone, somewhere is reading this right now — and feeling less alone because of you.
-    </p>
-    <div class="modal-actions">
-      <button class="modal-btn-main" onclick="goToFeed()">→ Go to HeartSpace Feed</button>
-      <button class="modal-btn-sec" onclick="writeAnother()">✍️ Write Another Story</button>
+  <!-- welcome / onboarding page -->
+  <div id="welcome-page" class="page-card hidden">
+    <h2>👋 nice to meet you</h2>
+    <div class="sub">just a couple of quick things before we begin</div>
+
+    <div style="background:#f6eee8; border-radius:28px; padding:1.8rem; margin:1.8rem 0;">
+      <p style="font-size:1.1rem;"><i class="fas fa-quote-left" style="color:#c6848f;"></i> This space is yours — no judgment, no pressure. You can share anonymously or open your heart.</p>
+    </div>
+
+    <label style="font-weight:600; margin-bottom:0.4rem; display:block;">what brings you here? (optional)</label>
+    <div class="pill-selector">
+      <div class="pill" onclick="togglePill(this)">healing</div>
+      <div class="pill" onclick="togglePill(this)">connection</div>
+      <div class="pill" onclick="togglePill(this)">writing</div>
+      <div class="pill" onclick="togglePill(this)">support</div>
+      <div class="pill" onclick="togglePill(this)">just looking</div>
+    </div>
+
+    <div class="flex" style="margin-top:2rem;">
+      <button class="btn btn-outline" style="width:50%;" onclick="switchPage('signin')">skip</button>
+      <button class="btn" style="width:50%;" onclick="switchPage('emotion')">continue →</button>
+    </div>
+  </div>
+
+  <!-- emotion / vibe page -->
+  <div id="emotion-page" class="page-card hidden">
+    <h2>how are you feeling today?</h2>
+    <div class="sub">pick a few – this helps us personalize your experience</div>
+
+    <div class="pill-selector" style="margin:2rem 0;">
+      <div class="pill" onclick="togglePill(this)">😢 grieving</div>
+      <div class="pill" onclick="togglePill(this)">🌱 hopeful</div>
+      <div class="pill" onclick="togglePill(this)">❤️ loved</div>
+      <div class="pill" onclick="togglePill(this)">🌀 anxious</div>
+      <div class="pill" onclick="togglePill(this)">🕊️ peaceful</div>
+      <div class="pill" onclick="togglePill(this)">💔 heartbroken</div>
+      <div class="pill" onclick="togglePill(this)">🌟 joyful</div>
+      <div class="pill" onclick="togglePill(this)">🤔 lost</div>
+      <div class="pill" onclick="togglePill(this)">🔥 angry</div>
+      <div class="pill" onclick="togglePill(this)">✨ inspired</div>
+    </div>
+
+    <div class="flex">
+      <button class="btn btn-outline" style="width:40%;" onclick="switchPage('welcome')">back</button>
+      <button class="btn" style="width:60%;" onclick="switchPage('story')">next: your first story</button>
+    </div>
+  </div>
+
+  <!-- first story page (mini version of compose) -->
+  <div id="story-page" class="page-card hidden">
+    <h2>share a little something</h2>
+    <div class="sub">it can be one sentence or one chapter – no rules</div>
+
+    <div class="field">
+      <label>story title (optional)</label>
+      <div class="input-wrapper">
+        <i class="fas fa-heading"></i>
+        <input type="text" placeholder="e.g., 'today I felt...'" id="firstTitle">
+      </div>
+    </div>
+    <div class="field">
+      <label>your story</label>
+      <div style="background:white; border:1.5px solid #f0ddd2; border-radius:28px; padding:16px 22px;">
+        <textarea id="firstBody" rows="4" style="width:100%; border:none; background:transparent; resize:vertical; font-family:inherit;" placeholder="I remember the first time..."></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; margin:1.2rem 0;">
+      <span style="display:flex; align-items:center; gap:6px;"><i class="far fa-eye-slash"></i> post anonymously?</span>
+      <div class="toggle-switch" style="width:44px;height:24px;background:#dccfc7;border-radius:30px;position:relative; cursor:pointer;" onclick="this.classList.toggle('active')">
+        <div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:0.2s;"></div>
+      </div>
+    </div>
+
+    <div class="flex">
+      <button class="btn btn-outline" style="width:40%;" onclick="switchPage('emotion')">back</button>
+      <button class="btn" style="width:60%;" onclick="publishFirstStory()">publish & see feed</button>
+    </div>
+    <style>.toggle-switch.active { background:#9db6a2; } .toggle-switch.active div { left:23px; }</style>
+  </div>
+
+  <!-- feed page (live mini feed) -->
+  <div id="feed-page" class="page-card hidden">
+    <h2><i class="fas fa-stream" style="color:#b58c89;"></i> community feed</h2>
+    <div class="sub">stories shared by hearts like yours</div>
+
+    <div id="miniFeed" style="margin: 1.8rem 0;">
+      <!-- dynamic from local storage -->
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <button class="btn btn-outline" style="width:50%;" onclick="switchPage('story')">write another</button>
+      <button class="btn" style="width:50%;" onclick="switchPage('signin')">← sign in page</button>
+    </div>
+    <div style="margin-top:1rem; text-align:center;">
+      <a onclick="switchPage('welcome')" style="cursor:pointer;color:#b4767e;">back to welcome</a>
     </div>
   </div>
 </div>
 
 <script>
-
-/* === STATS === */
-function updateStats() {
-  const body  = document.getElementById('storyBody').value;
-  const words = body.trim() === '' ? 0 : body.trim().split(/\s+/).length;
-  const chars = body.length;
-  const paras = body.trim() === '' ? 0 : (body.split(/\n\s*\n/).filter(p => p.trim()).length || 1);
-  const mins  = Math.max(1, Math.ceil(words / 200));
-  document.getElementById('wordCount').textContent  = words;
-  document.getElementById('charCount').textContent  = chars;
-  document.getElementById('paraCount').textContent  = paras;
-  document.getElementById('readTime').textContent   = `~${mins} min read`;
-  document.getElementById('charCounter').textContent = `${chars} chars`;
-}
-
-/* === PROGRESS === */
-function updateProgress() {
-  const title = document.getElementById('storyTitle').value.trim().length;
-  const body  = document.getElementById('storyBody').value.trim().length;
-  const pct   = Math.min(100, (title > 0 ? 15 : 0) + Math.min(85, body / 8));
-  document.getElementById('progressFill').style.width = pct + '%';
-}
-
-/* === FORMAT === */
-function fmt(type) {
-  const ta  = document.getElementById('storyBody');
-  const s   = ta.selectionStart;
-  const e   = ta.selectionEnd;
-  const sel = ta.value.substring(s, e);
-  let insert = '';
-  switch(type) {
-    case 'bold':          insert = `**${sel || 'bold text'}**`; break;
-    case 'italic':        insert = `_${sel || 'italic text'}_`; break;
-    case 'underline':     insert = `<u>${sel || 'underlined text'}</u>`; break;
-    case 'strikethrough': insert = `~~${sel || 'text'}~~`; break;
-    case 'heading':       insert = `\n## ${sel || 'Heading'}\n`; break;
-    case 'quote':         insert = `\n> ${sel || 'A meaningful quote or moment…'}\n`; break;
-    case 'list':          insert = `\n• ${sel || 'List item'}\n`; break;
-    case 'divider':       insert = `\n\n— — —\n\n`; break;
-    case 'left':   ta.style.textAlign = 'left';   return;
-    case 'center': ta.style.textAlign = 'center'; return;
-    default: return;
-  }
-  ta.value = ta.value.substring(0, s) + insert + ta.value.substring(e);
-  ta.selectionStart = ta.selectionEnd = s + insert.length;
-  ta.focus(); updateStats(); updateProgress();
-}
-
-/* === CHAPTERS === */
-let chapterCount = 1;
-const chapterData = { 1: '' };
-
-function selectChapter(pill) {
-  const cur = parseInt(document.querySelector('.chapter-pill.active').textContent.replace('Chapter ',''));
-  chapterData[cur] = document.getElementById('storyBody').value;
-  document.querySelectorAll('.chapter-pill').forEach(p => p.classList.remove('active'));
-  pill.classList.add('active');
-  const num = parseInt(pill.textContent.replace('Chapter ',''));
-  document.getElementById('storyBody').value = chapterData[num] || '';
-  updateStats(); updateProgress();
-}
-
-function addChapter() {
-  chapterCount++;
-  chapterData[chapterCount] = '';
-  const bar    = document.querySelector('.chapter-bar');
-  const addBtn = bar.querySelector('.add-chapter-btn');
-  const pill   = document.createElement('div');
-  pill.className   = 'chapter-pill';
-  pill.textContent = `Chapter ${chapterCount}`;
-  pill.onclick     = function() { selectChapter(this); };
-  bar.insertBefore(pill, addBtn);
-  selectChapter(pill);
-  document.getElementById('storyBody').focus();
-}
-
-/* === EMOTIONS === */
-const emotionQuotes = {
-  grief:   '"Grief is just love with nowhere to go." — Jamie Anderson',
-  healing: '"Healing is not linear. Be patient and gentle with yourself."',
-  anxiety: '"You don\'t have to control your thoughts. Just don\'t let them control you."',
-  hope:    '"Hope is being able to see light despite all the darkness." — Desmond Tutu',
-  love:    '"The most important thing is to learn to give out love and let it come in."',
-  anger:   '"Anger is a signal, and one worth listening to." — Harriet Lerner',
-  peace:   '"Peace comes from within. Do not seek it without." — Buddha',
-  lost:    '"Not all those who wander are lost." — J.R.R. Tolkien',
-  joy:     '"Joy is not in things. It is in us." — Richard Wagner',
-  longing: '"The heart has reasons that reason does not know." — Blaise Pascal',
-};
-
-function selectEmotion(card, name, colorClass) {
-  document.querySelectorAll('.emotion-card').forEach(c => {
-    c.classList.remove('selected','sage','lav','amber','sky');
-  });
-  card.classList.add('selected');
-  if (colorClass !== 'rose') card.classList.add(colorClass);
-  const q = emotionQuotes[name] || '"Your feelings are valid. Always."';
-  document.getElementById('quoteBlock').innerHTML = `"${q}"<cite>— HeartSpace</cite>`;
-}
-
-/* === TAGS === */
-const tags = [];
-function handleTagInput(e) {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    const input = document.getElementById('tagField');
-    const val   = input.value.trim().replace(/,$/, '').toLowerCase();
-    if (!val || tags.includes(val) || tags.length >= 10) return;
-    tags.push(val);
-    const chip = document.createElement('span');
-    chip.className = 'tag-item';
-    chip.innerHTML = `#${val}<button class="tag-remove" onclick="removeTag('${val}',this.parentElement)">×</button>`;
-    document.getElementById('tagsBox').insertBefore(chip, document.getElementById('tagField'));
-    input.value = '';
-  }
-  if (e.key === 'Backspace' && !document.getElementById('tagField').value && tags.length > 0) {
-    const last = document.querySelector('#tagsBox .tag-item:last-of-type');
-    if (last) { tags.pop(); last.remove(); }
-  }
-}
-function removeTag(name, el) {
-  const idx = tags.indexOf(name);
-  if (idx > -1) tags.splice(idx, 1);
-  el.remove();
-}
-
-/* === ANON === */
-let isAnon = false;
-const anonNames = ['QuietSunflower42','SilentMoonlake','WanderingMaple','GentleWave99','HiddenSpark7','TenderEcho21'];
-function toggleAnon() {
-  isAnon = !isAnon;
-  document.getElementById('anonToggle').classList.toggle('on', isAnon);
-  document.getElementById('anonDesc').textContent = isAnon
-    ? `You'll appear as "${anonNames[Math.floor(Math.random()*anonNames.length)]}" 🌻`
-    : 'Your real name will be shown on this story';
-}
-
-/* === VISIBILITY === */
-function selectVis(card) {
-  document.querySelectorAll('.vis-card').forEach(c => c.classList.remove('selected'));
-  card.classList.add('selected');
-}
-
-/* === AUTOSAVE === */
-let autosaveTimer = null;
-function triggerAutosave() {
-  const dot  = document.getElementById('autosaveDot');
-  const text = document.getElementById('autosaveText');
-  dot.classList.add('saving'); text.textContent = 'Saving…';
-  clearTimeout(autosaveTimer);
-  autosaveTimer = setTimeout(() => {
-    dot.classList.remove('saving'); text.textContent = 'Draft saved ✓';
-    localStorage.setItem('hs_draft_title', document.getElementById('storyTitle').value);
-    localStorage.setItem('hs_draft_body',  document.getElementById('storyBody').value);
-  }, 1800);
-}
-function saveDraft() {
-  triggerAutosave();
-  setTimeout(() => {
-    document.getElementById('autosaveDot').classList.remove('saving');
-    document.getElementById('autosaveText').textContent = 'Draft saved ✓';
-  }, 500);
-}
-window.addEventListener('DOMContentLoaded', () => {
-  const t = localStorage.getItem('hs_draft_title');
-  const b = localStorage.getItem('hs_draft_body');
-  if (t) document.getElementById('storyTitle').value = t;
-  if (b) document.getElementById('storyBody').value  = b;
-  updateStats(); updateProgress();
-});
-setInterval(triggerAutosave, 30000);
-
-/* === FILE UPLOAD === */
-function triggerFileUpload(type) {
-  const input = document.getElementById('fileUpload');
-  input.accept = type === 'image' ? 'image/*' : 'audio/*';
-  input.click();
-}
-function handleFileUpload(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const ta   = document.getElementById('storyBody');
-  const pos  = ta.selectionStart;
-  ta.value   = ta.value.substring(0, pos) + `\n[Attached: ${file.name}]\n` + ta.value.substring(pos);
-  updateStats(); updateProgress();
-  alert(`✓ "${file.name}" attached to your story.`);
-}
-function addYoutubeEmbed() {
-  const url = prompt('Paste a YouTube video link:'); if (!url) return;
-  const ta  = document.getElementById('storyBody');
-  const pos = ta.selectionStart;
-  ta.value  = ta.value.substring(0, pos) + `\n[Video: ${url}]\n` + ta.value.substring(pos);
-  updateStats(); updateProgress();
-}
-
-/* === PREVIEW === */
-function previewStory() {
-  const title    = document.getElementById('storyTitle').value || 'Untitled Story';
-  const subtitle = document.getElementById('storySubtitle').value || '';
-  const body     = document.getElementById('storyBody').value || '';
-  const words    = body.trim() === '' ? 0 : body.trim().split(/\s+/).length;
-  const mins     = Math.max(1, Math.ceil(words / 200));
-  const date     = new Date().toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const tagList = tags.map(t =>
-    '<span style="background:#fdeaea;color:#d4748a;padding:2px 10px;border-radius:20px;font-size:0.78rem;margin:2px;display:inline-block;">#' + t + '</span>'
-  ).join('');
-
-  const win = window.open('', '_blank');
-
-  win.document.write(`
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Preview – ${title}</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-body{background:#fdf8f2;margin:0;font-family:'Lora',serif;color:#2d1f0e;}
-.bar{background:#5c4530;color:white;padding:10px 32px;font-family:'Nunito',sans-serif;font-size:0.8rem;display:flex;justify-content:space-between;}
-.badge{background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;}
-article{max-width:700px;margin:60px auto;padding:0 24px 80px;}
-h1{font-size:2.4rem;font-weight:700;line-height:1.2;margin-bottom:10px;}
-.sub{font-style:italic;color:#9a8470;margin-bottom:20px;font-size:1.05rem;}
-.meta{font-family:'Nunito',sans-serif;font-size:0.8rem;color:#9a8470;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap;}
-.body{font-size:1.1rem;line-height:2;white-space:pre-wrap;}
-.tags{margin-top:32px;}
-</style>
-</head>
-<body>
-
-<div class="bar">
-  <span class="badge">👁 Preview — HeartSpace</span>
-  <span>${date}</span>
-</div>
-
-<article>
-  <h1>${title}</h1>
-  ${subtitle ? '<p class="sub">' + subtitle + '</p>' : ''}
-  <div class="meta">
-    <span>💜 HeartSpace</span>
-    <span>📖 ~${mins} min read</span>
-    <span>📝 ${words} words</span>
-    <span>${isAnon ? '👤 Anonymous' : '✍️ Named'}</span>
-  </div>
-
-  <div class="body">${body || '<em style="color:#c4a882">No content yet…</em>'}</div>
-  ${tags.length ? '<div class="tags">' + tagList + '</div>' : ''}
-</article>
-
-</body>
-</html>
-  `);
-
-  win.document.close();
-}
-
-/* === PUBLISH === */
-function publishStory() {
-  const title = document.getElementById("storyTitle").value.trim();
-  const subtitle = document.getElementById("storySubtitle").value.trim();
-  const body = document.getElementById("storyBody").value.trim();
-
-  if (!title) {
-    alert("Please add a title to your story before publishing 💜");
-    document.getElementById("storyTitle").focus();
-    return;
-  }
-
-  if (!body || body.length < 20) {
-    alert("Please write at least a few sentences before publishing 🌿");
-    document.getElementById("storyBody").focus();
-    return;
-  }
-
-  const emotion =
-    document.querySelector(".emotion-card.selected .em-name")?.textContent || "";
-
-  fetch("http://localhost:3000/stories/publish", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title,
-      subtitle,
-      body,
-      emotion,
-      tags,
-      isAnonymous: isAnon,
-      authorAnonName: isAnon ? "AnonymousSoul" : "NamedUser",
-      visibility: "public"
-    })
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Story published:", data);
-      document.getElementById("successModal").classList.add("show");
-      spawnConfetti();
-      localStorage.removeItem("hs_draft_title");
-      localStorage.removeItem("hs_draft_body");
-    })
-    .catch(err => {
-      console.error("Publish failed:", err);
-      alert("Something went wrong while publishing 😢");
+  // ----- page switching -----
+  function switchPage(pageId) {
+    // hide all page cards
+    const pages = ['signin', 'signup', 'welcome', 'emotion', 'story', 'feed'];
+    pages.forEach(p => {
+      const el = document.getElementById(p + '-page');
+      if (el) el.classList.add('hidden');
     });
-}
-function goToFeed() {
-  document.getElementById('successModal').classList.remove('show');
-  alert('In a real app, you would be taken to the HeartSpace feed now 💜');
-}
-function writeAnother() {
-  document.getElementById('successModal').classList.remove('show');
-  document.getElementById('storyTitle').value    = '';
-  document.getElementById('storySubtitle').value = '';
-  document.getElementById('storyBody').value     = '';
-  updateStats(); updateProgress();
-  document.getElementById('storyTitle').focus();
-}
+    // show selected
+    const activeEl = document.getElementById(pageId + '-page');
+    if (activeEl) activeEl.classList.remove('hidden');
 
-/* === CONFETTI === */
-function spawnConfetti() {
-  const colors = ['#d4748a','#7a9e7e','#9b8bb4','#e8a045','#6aaed6','#e8d5b7'];
-  for (let i = 0; i < 60; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.cssText = `
-      left:${Math.random()*100}vw; top:-20px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      width:${6+Math.random()*10}px; height:${6+Math.random()*10}px;
-      animation-duration:${1.5+Math.random()*2}s;
-      animation-delay:${Math.random()*0.8}s;
-      border-radius:${Math.random()>0.5?'50%':'2px'};
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 4000);
+    // update active tab
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+      if (tab.dataset.page === pageId) tab.classList.add('active');
+    });
+
+    // if feed page is shown, refresh feed content
+    if (pageId === 'feed') renderMiniFeed();
   }
-}
 
-/* === KEYBOARD SHORTCUTS === */
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey||e.metaKey) && e.key==='s')            { e.preventDefault(); saveDraft(); }
-  if ((e.ctrlKey||e.metaKey) && e.key==='p')            { e.preventDefault(); previewStory(); }
-  if ((e.ctrlKey||e.metaKey) && e.shiftKey && e.key==='Enter') { e.preventDefault(); publishStory(); }
-});
+  // pill toggles (for interest/feeling)
+  window.togglePill = function(pill) {
+    pill.classList.toggle('selected');
+  };
 
+  // fake sign in (just moves to welcome)
+  window.fakeSignIn = function() {
+    const email = document.getElementById('signinEmail').value.trim();
+    if (!email) { alert('demo: any email works'); } else {
+      alert(`signed in as ${email} (demo)`);
+      switchPage('welcome');
+    }
+  };
+
+  window.fakeSignUp = function() {
+    const name = document.getElementById('signupName').value.trim();
+    if (!name) { alert('please enter a name (demo)'); return; }
+    alert(`welcome, ${name}! account created (demo)`);
+    switchPage('welcome');
+  };
+
+  // publish first story from "story" page -> goes to feed
+  window.publishFirstStory = function() {
+    const title = document.getElementById('firstTitle').value.trim() || 'untitled moment';
+    const body = document.getElementById('firstBody').value.trim();
+    if (!body) { alert('write at least a short sentence 💜'); return; }
+
+    // get anon status from toggle (simple)
+    const toggle = document.querySelector('#story-page .toggle-switch');
+    const isAnon = toggle.classList.contains('active');
+
+    const story = {
+      id: Date.now(),
+      title: title,
+      body: body,
+      emotion: 'reflection',
+      anon: isAnon,
+      time: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
+      date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' })
+    };
+
+    let stories = JSON.parse(localStorage.getItem('hs_stories') || '[]');
+    stories.unshift(story);
+    localStorage.setItem('hs_stories', JSON.stringify(stories));
+
+    // clear field
+    document.getElementById('firstTitle').value = '';
+    document.getElementById('firstBody').value = '';
+
+    alert('✨ story published!');
+    switchPage('feed');
+    renderMiniFeed();
+  };
+
+  // render feed (mini version) inside feed page
+  function renderMiniFeed() {
+    const container = document.getElementById('miniFeed');
+    if (!container) return;
+    const stories = JSON.parse(localStorage.getItem('hs_stories') || '[]');
+    if (stories.length === 0) {
+      container.innerHTML = '<div style="background:#f5eae2; border-radius:28px; padding:2rem; text-align:center;">✨ no stories yet — be the first to share.</div>';
+      return;
+    }
+    let html = '';
+    stories.slice(0, 5).forEach(s => {
+      html += `
+        <div style="background:white; border-radius:22px; padding:1.2rem 1.4rem; margin-bottom:1rem; border-left:5px solid #e5b7bc;">
+          <div style="display:flex; gap:12px; font-size:0.7rem; color:#8a7165;"> 
+            <span>${s.anon ? '👤 anonymous' : '🌟 member'}</span><span>${s.date} · ${s.time}</span>
+          </div>
+          <div style="font-weight:700; font-size:1.1rem;">${escapeHTML(s.title)}</div>
+          <div style="font-size:0.9rem; color:#4d3f35; background:#faf1ec; padding:8px 12px; border-radius:16px; margin:8px 0 4px;">${escapeHTML(s.body.substring(0,70))}${s.body.length>70?'…':''}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m;
+    });
+  }
+
+  // initialize: make sure signin is visible, prefill some feed if empty
+  window.onload = function() {
+    switchPage('signin');
+    // seed sample stories if empty
+    if (!localStorage.getItem('hs_stories') || JSON.parse(localStorage.getItem('hs_stories')).length === 0) {
+      const samples = [
+        { id: 1, title: 'a crack of light', body: 'even in darkness, i find small sparks.', emotion: 'Hope', anon: false, time: '3h ago', date: 'Feb 26' },
+        { id: 2, title: 'grief sits with me', body: 'i used to fight it. now i offer tea.', emotion: 'Grief', anon: true, time: 'yesterday', date: 'Feb 25' },
+      ];
+      localStorage.setItem('hs_stories', JSON.stringify(samples));
+    }
+    // pre-fill some fields for demo
+    document.getElementById('signupName') && (document.getElementById('signupName').value = 'Sam');
+    document.getElementById('signupEmail') && (document.getElementById('signupEmail').value = 'sam@heart.space');
+    document.getElementById('firstBody') && (document.getElementById('firstBody').value = 'Today i realized i am enough.');
+  };
+
+  // make toggle switch on story page interactive (simple)
+  document.querySelector('#story-page .toggle-switch')?.addEventListener('click', function(e) {
+    e.currentTarget.classList.toggle('active');
+  });
 </script>
+<!-- mini style addition for toggle -->
+<style>
+  .toggle-switch.active { background: #9db6a2; }
+  .toggle-switch.active div { left: 23px; }
+</style>
+
 </body>
 </html>
