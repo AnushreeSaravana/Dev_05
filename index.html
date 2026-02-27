@@ -1,551 +1,1471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HeartSpace · pages flow</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HeartSpace — A place to be heard</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700;800&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ROOT TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --bg:#fdf8f2; --white:#fffcf7; --parchment:#f5ead8;
+  --border:#e0cdb8; --border-light:#ede3d5;
+  --ink:#2d1f0e; --ink2:#5c4530; --muted:#9a8470; --sand:#e8d5b7;
+  --rose:#d4748a; --rose-bg:#fdeaea; --rose-light:#f0c4cc;
+  --sage:#7a9e7e; --sage-bg:#e8f3e9; --sage-light:#c8dfc9;
+  --lavender:#9b8bb4; --lavender-bg:#edeaf5; --lavender-light:#ddd4ee;
+  --amber:#e8a045; --amber-bg:#fef3de; --amber-light:#fde8c0;
+  --brown:#8b6f47; --brown-dark:#5c4530; --brown-light:#c4a882;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
 
-    :root {
-      --bg: #fcf5ef;
-      --surface: #fffaf5;
-      --ink: #1f2937;
-      --rose: #e6b2b8;
-      --rose-deep: #c97b8a;
-      --lavender: #cfc1e0;
-      --sage: #c0d6c0;
-      --muted: #735e51;
-      --border-light: #f0ded5;
-    }
+/* ═══════════════════════════════════════════════
+   PAGE SYSTEM
+═══════════════════════════════════════════════ */
+.page{display:none;min-height:100vh;animation:fadeUp 0.4s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes heartbeat{0%,70%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
 
-    body {
-      background: var(--bg);
-      color: #2e2b28;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:28px;right:28px;z-index:9999;
+  padding:14px 20px;border-radius:12px;font-size:0.88rem;font-weight:600;
+  display:none;align-items:center;gap:8px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.15);max-width:340px;
+}
+#toast.show{display:flex;animation:slideIn 0.3s ease;}
+#toast.success{background:#e8f3e9;border:1px solid var(--sage);color:#3a6b40;}
+#toast.error{background:var(--rose-bg);border:1px solid var(--rose);color:#8b3040;}
+#toast.info{background:var(--lavender-bg);border:1px solid var(--lavender);color:#4a3870;}
 
-    /* top navigation tabs (page indicators) */
-    .tab-bar {
-      background: rgba(255, 250, 240, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid #f0dacf;
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1.8rem;
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-    }
-    .tab {
-      padding: 1rem 0.2rem 0.8rem;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #a48d7e;
-      border-bottom: 3px solid transparent;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.15s;
-    }
-    .tab i { font-size: 1rem; }
-    .tab.active {
-      color: #b35e71;
-      border-bottom-color: #d698a6;
-    }
-    .tab:hover { color: #7b5f4f; }
+/* ═══════════════════════════════════════════════
+   ── PAGE 1: AUTH ──
+═══════════════════════════════════════════════ */
+#page-auth{display:grid;grid-template-columns:1fr 1fr;}
 
-    /* main panel where pages appear */
-    .page-container {
-      flex: 1;
-      padding: 2rem 2rem 3rem;
-      max-width: 700px;
-      margin: 0 auto;
-      width: 100%;
-      transition: opacity 0.2s ease;
-    }
+.left-panel{
+  background:linear-gradient(160deg,#2d1f0e 0%,#5c4530 40%,#8b6f47 100%);
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  padding:60px 56px;position:relative;overflow:hidden;
+}
+.left-panel::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 600px 600px at 80% 20%,rgba(212,116,138,0.15) 0%,transparent 60%),
+             radial-gradient(ellipse 400px 400px at 20% 80%,rgba(122,158,126,0.1) 0%,transparent 60%);
+}
+.left-content{position:relative;z-index:1;}
+.left-logo{font-family:'Caveat',cursive;font-size:2.2rem;color:white;font-weight:700;margin-bottom:40px;display:flex;align-items:center;gap:10px;}
+.left-headline{font-family:'Lora',serif;font-size:2.6rem;font-weight:700;color:white;line-height:1.2;margin-bottom:20px;}
+.left-headline span{color:#f0c4cc;}
+.left-sub{color:rgba(255,255,255,0.7);font-size:0.95rem;line-height:1.8;max-width:400px;margin-bottom:48px;}
+.left-features{display:flex;flex-direction:column;gap:16px;}
+.left-feat{display:flex;align-items:flex-start;gap:12px;color:rgba(255,255,255,0.85);font-size:0.88rem;line-height:1.5;}
+.feat-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.feat-text strong{display:block;color:white;font-weight:700;margin-bottom:2px;}
+.left-quote{margin-top:48px;padding:20px 24px;background:rgba(255,255,255,0.08);border-left:3px solid rgba(212,116,138,0.6);border-radius:10px;font-family:'Caveat',cursive;font-size:1.1rem;color:rgba(255,255,255,0.85);line-height:1.5;}
+.left-quote cite{display:block;margin-top:6px;font-family:'Nunito',sans-serif;font-size:0.73rem;color:rgba(255,255,255,0.5);font-style:normal;}
 
-    /* each page (card style) */
-    .page-card {
-      background: var(--surface);
-      border-radius: 40px;
-      padding: 2.4rem 2.8rem;
-      box-shadow: 0 18px 36px -14px #decbbd;
-      border: 1px solid #ffeede;
-      animation: fadeSlide 0.3s ease;
-    }
-    @keyframes fadeSlide {
-      0% { opacity: 0.6; transform: translateY(6px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
+.right-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:48px 56px;overflow-y:auto;}
+.auth-box{width:100%;max-width:420px;}
 
-    h2 {
-      font-size: 2rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
-    }
-    .sub {
-      color: #9b8477;
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
+.tabs{display:flex;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:36px;background:var(--white);}
+.tab{flex:1;padding:12px;text-align:center;font-size:0.85rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;border:none;background:none;font-family:'Nunito',sans-serif;}
+.tab.active{background:var(--brown-dark);color:white;}
 
-    /* form elements */
-    .field {
-      margin-bottom: 1.5rem;
-    }
-    .field label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #ab9485;
-      margin-bottom: 0.4rem;
-    }
-    .input-wrapper {
-      display: flex;
-      align-items: center;
-      background: white;
-      border: 1.5px solid #f0ddd2;
-      border-radius: 60px;
-      padding: 0.1rem 0.1rem 0.1rem 20px;
-    }
-    .input-wrapper i {
-      color: #c9b2a5;
-      font-size: 1rem;
-      margin-right: 8px;
-    }
-    .input-wrapper input {
-      width: 100%;
-      border: none;
-      padding: 14px 18px 14px 6px;
-      background: transparent;
-      font-size: 0.95rem;
-      outline: none;
-    }
-    .input-wrapper input:focus { outline: none; }
+.form-section{display:none;}
+.form-section.active{display:block;animation:fadeUp 0.3s ease;}
 
-    .btn {
-      background: #b58c89;
-      color: white;
-      border: none;
-      padding: 15px 28px;
-      border-radius: 60px;
-      font-weight: 700;
-      font-size: 1rem;
-      width: 100%;
-      cursor: pointer;
-      transition: 0.15s;
-      box-shadow: 0 8px 18px #e2c7bd;
-    }
-    .btn:hover { background: #a47370; transform: scale(1.01); }
-    .btn-outline {
-      background: transparent;
-      border: 1.5px solid #dbbfb3;
-      color: #644d40;
-      box-shadow: none;
-    }
-    .btn-outline:hover { background: #f7e5db; transform: none; }
+.form-title{font-family:'Lora',serif;font-size:1.7rem;font-weight:700;color:var(--brown-dark);margin-bottom:6px;}
+.form-sub{font-size:0.85rem;color:var(--muted);margin-bottom:28px;line-height:1.6;}
 
-    .link-row {
-      text-align: center;
-      margin-top: 1.4rem;
-      font-size: 0.9rem;
-    }
-    .link-row a {
-      color: #b4767e;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .link-row a:hover { text-decoration: underline; }
+.field-auth{margin-bottom:18px;}
+.field-auth label{display:block;font-size:0.75rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.field-auth input{
+  width:100%;padding:13px 16px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--white);
+  font-family:'Nunito',sans-serif;font-size:0.92rem;color:var(--ink);
+  outline:none;transition:all 0.2s;
+}
+.field-auth input::placeholder{color:var(--sand);}
+.field-auth input:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(212,116,138,0.1);}
+.field-auth input.error-input{border-color:#e05050;}
+.field-error{font-size:0.75rem;color:#e05050;margin-top:5px;}
+.field-hint{font-size:0.73rem;color:var(--muted);margin-top:5px;}
 
-    hr { border: none; border-top: 1.5px dashed #e4cfc2; margin: 1.8rem 0; }
+.password-wrap{position:relative;}
+.password-wrap input{padding-right:46px;}
+.toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--muted);}
 
-    /* social login mini */
-    .social-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-    .social-btn {
-      background: #f7eae2;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      color: #5e4a3c;
-    }
+.btn-submit{
+  width:100%;padding:15px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--rose),#b85a9a);
+  color:white;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
+  cursor:pointer;letter-spacing:0.3px;margin-top:8px;
+  box-shadow:0 5px 20px rgba(212,116,138,0.4);transition:all 0.25s;
+}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,116,138,0.5);}
+.btn-submit:disabled{background:#ccc;box-shadow:none;transform:none;cursor:not-allowed;}
 
-    /* extra pages: welcome/onboarding */
-    .pill-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 2rem 0;
-    }
-    .pill {
-      background: #f7ede7;
-      padding: 10px 24px;
-      border-radius: 40px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      border: 1.5px solid transparent;
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-    .pill.selected {
-      border-color: #c6848f;
-      background: #f8e2df;
-    }
+.divider-auth{display:flex;align-items:center;gap:14px;margin:22px 0;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+.divider-auth span{font-size:0.78rem;color:var(--muted);}
 
-    .hidden { display: none; }
-    .flex { display: flex; gap: 16px; }
-  </style>
+.forgot-link{display:block;text-align:right;font-size:0.8rem;color:var(--rose);text-decoration:none;margin-top:-8px;margin-bottom:18px;cursor:pointer;background:none;border:none;font-family:'Nunito',sans-serif;width:100%;}
+.forgot-link:hover{text-decoration:underline;}
+
+.anon-preview{background:var(--rose-bg);border:1px solid rgba(212,116,138,0.3);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:0.82rem;color:var(--rose);display:none;align-items:center;gap:6px;}
+.anon-preview.show{display:flex;}
+
+.strength-bar{height:4px;border-radius:2px;background:var(--border);margin-top:8px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:2px;transition:all 0.3s;width:0%;}
+.strength-fill.weak{background:#e05050;width:25%;}
+.strength-fill.fair{background:var(--amber);width:50%;}
+.strength-fill.good{background:#5db870;width:75%;}
+.strength-fill.strong{background:var(--sage);width:100%;}
+.strength-label{font-size:0.7rem;color:var(--muted);margin-top:3px;}
+
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-top:4px;}
+.check-row input[type=checkbox]{margin-top:2px;accent-color:var(--rose);cursor:pointer;}
+.check-row label{font-size:0.8rem;color:var(--muted);line-height:1.5;cursor:pointer;}
+.check-row label a{color:var(--rose);text-decoration:none;}
+
+/* ═══════════════════════════════════════════════
+   ── PAGE 2: FEED / REVIEW ──
+═══════════════════════════════════════════════ */
+#page-feed .header{
+  background:linear-gradient(160deg,#2d1f0e 0%,#5c4530 50%,#8b6f47 100%);
+  padding:40px 24px 32px;text-align:center;position:relative;overflow:hidden;
+}
+#page-feed .header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 500px 300px at 80% 20%,rgba(212,116,138,0.18) 0%,transparent 60%),
+             radial-gradient(ellipse 400px 400px at 10% 80%,rgba(122,158,126,0.12) 0%,transparent 60%);
+}
+.header-inner{position:relative;z-index:1;}
+.logo-heart{font-size:3.5rem;display:inline-block;animation:heartbeat 2s ease-in-out infinite;margin-bottom:8px;}
+.logo-name{font-family:'Caveat',cursive;font-size:3rem;font-weight:700;color:white;display:block;line-height:1;letter-spacing:1px;}
+.logo-tagline{font-family:'Lora',serif;font-style:italic;color:rgba(255,255,255,0.72);font-size:1rem;margin-top:8px;}
+
+.feed-nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.feed-nav-inner{max-width:900px;margin:0 auto;display:flex;justify-content:center;gap:8px;padding:12px 16px;}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 28px;border:1.5px solid var(--border);background:transparent;border-radius:100px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;color:var(--muted);transition:all 0.25s;}
+.nav-btn:hover{border-color:var(--brown);color:var(--brown);background:var(--amber-bg);}
+.nav-btn.active{background:var(--brown-dark);color:white;border-color:var(--brown-dark);}
+.nav-icon{font-size:1.1rem;}
+.write-fab{padding:10px 22px;background:linear-gradient(135deg,var(--rose),var(--lavender));color:white;border:none;border-radius:100px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;transition:all 0.2s;box-shadow:0 4px 14px rgba(212,116,138,0.35);}
+.write-fab:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,116,138,0.45);}
+
+.feed-section{display:none;max-width:900px;margin:0 auto;padding:32px 16px 60px;}
+.feed-section.active{display:block;animation:fadeUp 0.35s ease;}
+
+.emotion-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.emotion-chip{padding:8px 18px;border:1.5px solid var(--border);background:var(--white);border-radius:100px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;color:var(--ink2);transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.emotion-chip:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.emotion-chip.joy:hover{background:var(--amber);color:white;border-color:var(--amber);}
+.emotion-chip.sadness:hover{background:#7aa3c5;color:white;border-color:#7aa3c5;}
+.emotion-chip.anxiety:hover{background:#b58bb4;color:white;border-color:#b58bb4;}
+.emotion-chip.anger:hover{background:var(--rose);color:white;border-color:var(--rose);}
+.emotion-chip.love:hover{background:var(--rose);color:white;border-color:var(--rose);}
+.emotion-chip.gratitude:hover{background:var(--sage);color:white;border-color:var(--sage);}
+.emotion-chip.hope:hover{background:#a8b88a;color:white;border-color:#a8b88a;}
+.emotion-chip.fear:hover{background:#a09090;color:white;border-color:#a09090;}
+
+.section-label{font-family:'Caveat',cursive;font-size:1.5rem;color:var(--brown);font-weight:700;margin-bottom:20px;text-align:center;}
+
+.story-wrapper{position:relative;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:32px 36px;box-shadow:0 4px 24px rgba(45,31,14,0.07);min-height:300px;overflow:hidden;transition:box-shadow 0.2s;}
+.story-wrapper:hover{box-shadow:0 8px 32px rgba(45,31,14,0.12);}
+.story-wrapper::before{content:'"';position:absolute;top:12px;left:24px;font-family:'Lora',serif;font-size:6rem;color:var(--sand);line-height:1;pointer-events:none;}
+.story-top{display:flex;align-items:center;gap:14px;margin-bottom:20px;position:relative;z-index:1;}
+.story-avatar-circle{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--brown) 0%,var(--rose) 100%);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;border:2px solid var(--border);}
+.story-author{font-weight:800;color:var(--ink2);font-size:0.95rem;}
+.story-time{font-size:0.78rem;color:var(--muted);}
+.story-emotion-badge{margin-left:auto;padding:4px 14px;border-radius:100px;font-size:0.77rem;font-weight:700;background:var(--lavender-bg);color:var(--lavender);border:1px solid #d6cfe8;}
+.story-body{font-family:'Lora',serif;font-size:1.08rem;line-height:1.85;color:var(--ink2);margin-bottom:24px;position:relative;z-index:1;}
+.story-footer{display:flex;gap:10px;position:relative;z-index:1;}
+.story-act-btn{padding:7px 16px;border:1.5px solid var(--border);background:transparent;border-radius:100px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.story-act-btn:hover{border-color:var(--rose);color:var(--rose);background:var(--rose-bg);}
+.story-act-btn.liked{background:var(--rose-bg);color:var(--rose);border-color:var(--rose);}
+.story-nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:20px;}
+.story-nav-arrow{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:1.3rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:var(--ink2);}
+.story-nav-arrow:hover:not(:disabled){background:var(--brown-dark);color:white;border-color:var(--brown-dark);}
+.story-nav-arrow:disabled{opacity:0.3;cursor:not-allowed;}
+.story-counter{font-size:0.82rem;color:var(--muted);font-weight:700;}
+.loading-row{text-align:center;padding:32px;display:none;}
+.loading-row.show{display:block;}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--brown);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+
+/* Profile */
+.profile-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:36px;box-shadow:0 4px 24px rgba(45,31,14,0.07);max-width:620px;margin:0 auto;}
+.profile-avatar-wrap{text-align:center;margin-bottom:28px;}
+.avatar-big{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--brown) 0%,var(--rose) 100%);display:flex;align-items:center;justify-content:center;font-size:2.6rem;margin:0 auto 10px;border:3px solid var(--border);position:relative;cursor:pointer;transition:transform 0.2s;}
+.avatar-big:hover{transform:scale(1.05);}
+.avatar-edit-overlay{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--brown-dark);color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;border:2px solid var(--white);}
+.anon-name{font-family:'Caveat',cursive;font-size:1.5rem;font-weight:700;color:var(--brown-dark);margin-bottom:2px;}
+.anon-note{font-size:0.75rem;color:var(--muted);background:var(--amber-bg);padding:3px 12px;border-radius:100px;display:inline-block;border:1px solid var(--amber);}
+.edit-note{font-size:0.76rem;color:var(--muted);margin-top:8px;}
+.pfield{margin-bottom:18px;}
+.pfield label{display:block;font-size:0.8rem;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.pfield input,.pfield textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Nunito',sans-serif;font-size:0.9rem;color:var(--ink);transition:border-color 0.2s,box-shadow 0.2s;outline:none;}
+.pfield input:focus,.pfield textarea:focus{border-color:var(--brown);box-shadow:0 0 0 3px rgba(139,111,71,0.12);}
+.pfield textarea{min-height:100px;resize:vertical;}
+.char-hint{font-size:0.73rem;color:var(--muted);text-align:right;margin-top:4px;}
+.security-block{background:var(--bg);border:1px solid var(--border-light);border-radius:14px;padding:20px;margin-bottom:20px;}
+.security-block h4{font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:14px;}
+.security-row{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;}
+.security-row:last-child{margin-bottom:0;}
+.sec-icon{font-size:1.1rem;flex-shrink:0;}
+.sec-label{font-size:0.82rem;font-weight:700;color:var(--ink2);min-width:100px;}
+.security-row input{flex:1;border:none;background:transparent;font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--ink);outline:none;}
+.verify-btn{padding:5px 14px;border:1.5px solid var(--brown);background:transparent;border-radius:100px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;color:var(--brown);transition:all 0.2s;}
+.verify-btn:hover{background:var(--brown-dark);color:white;border-color:var(--brown-dark);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;}
+.switch{position:relative;display:inline-block;width:44px;height:24px;}
+.switch input{opacity:0;width:0;height:0;}
+.slider-toggle{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:24px;transition:0.3s;}
+.slider-toggle::before{content:'';position:absolute;width:16px;height:16px;left:4px;bottom:4px;background:white;border-radius:50%;transition:0.3s;}
+input:checked + .slider-toggle{background:var(--brown);}
+input:checked + .slider-toggle::before{transform:translateX(20px);}
+.profile-btns{display:flex;gap:10px;margin-top:24px;}
+.btn-psave{flex:1;padding:13px;background:var(--brown-dark);color:white;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.btn-psave:hover{background:var(--brown);transform:translateY(-1px);box-shadow:0 4px 12px rgba(92,69,48,0.3);}
+.btn-logout{padding:13px 24px;background:transparent;border:1.5px solid var(--rose);color:var(--rose);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.btn-logout:hover{background:var(--rose);color:white;}
+
+/* Overlay / Popup */
+.overlay{position:fixed;inset:0;background:rgba(45,31,14,0.5);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.overlay.show{opacity:1;pointer-events:all;}
+.popup-box{background:var(--white);border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.18);transform:translateY(20px);transition:transform 0.25s;}
+.overlay.show .popup-box{transform:translateY(0);}
+.popup-head{padding:24px 28px 16px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;}
+.popup-head h3{font-family:'Lora',serif;font-size:1.3rem;font-weight:700;color:var(--brown-dark);}
+.popup-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1rem;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.popup-close:hover{background:var(--rose-bg);color:var(--rose);border-color:var(--rose);}
+.popup-body{padding:24px 28px;}
+.popup-foot{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border-light);}
+.btn-cancel{padding:11px 22px;border:1.5px solid var(--border);background:transparent;border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.btn-cancel:hover{border-color:var(--ink2);color:var(--ink2);}
+.btn-primary{padding:11px 28px;background:var(--brown-dark);color:white;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.btn-primary:hover{background:var(--brown);transform:translateY(-1px);}
+.story-write-area{width:100%;min-height:180px;padding:14px;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Lora',serif;font-size:1rem;color:var(--ink);line-height:1.7;resize:vertical;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.story-write-area:focus{border-color:var(--brown);box-shadow:0 0 0 3px rgba(139,111,71,0.12);}
+.popup-opts{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.anon-check{display:flex;align-items:center;gap:8px;font-size:0.82rem;font-weight:700;color:var(--ink2);cursor:pointer;}
+.anon-check input{width:16px;height:16px;cursor:pointer;accent-color:var(--brown-dark);}
+.avatar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.avatar-opt{aspect-ratio:1;border-radius:50%;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all 0.2s;background:var(--bg);}
+.avatar-opt:hover,.avatar-opt.selected{border-color:var(--brown);transform:scale(1.08);box-shadow:0 4px 12px rgba(139,111,71,0.2);}
+.opt-label{font-size:0.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;}
+
+/* ═══════════════════════════════════════════════
+   ── PAGE 3: STORY EDITOR ──
+═══════════════════════════════════════════════ */
+#page-editor{
+  position:relative;overflow-x:hidden;
+}
+#page-editor::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(ellipse at 20% 50%,rgba(212,116,138,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse at 80% 20%,rgba(155,139,180,0.07) 0%,transparent 50%),
+    radial-gradient(ellipse at 60% 80%,rgba(122,158,126,0.06) 0%,transparent 50%);
+  pointer-events:none;z-index:0;
+}
+.editor-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(253,246,238,0.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Caveat',cursive;font-size:1.7rem;font-weight:600;color:var(--brown-dark);display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;background:none;border:none;font-family:'Caveat',cursive;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.autosave{font-size:0.75rem;color:var(--muted);display:flex;align-items:center;gap:5px;font-style:italic;}
+.autosave-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);animation:blink 2s infinite;}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:600;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--brown-light);color:var(--brown);background:var(--parchment);}
+.btn-enav-save{background:var(--brown-dark);color:var(--bg);border:none;padding:9px 22px;border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;transition:all 0.2s;}
+.btn-enav-save:hover{background:var(--brown);transform:translateY(-1px);}
+.editor-progress-bar{height:3px;background:linear-gradient(90deg,var(--rose),var(--lavender),var(--sage));width:0%;transition:width 0.4s ease;position:relative;z-index:10;}
+.editor-layout{position:relative;z-index:1;display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 65px);}
+.editor-main{padding:48px 56px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:28px;}
+.editor-intro{animation:fadeIn 0.5s ease;}
+.editor-intro h1{font-family:'Lora',serif;font-size:2rem;font-weight:700;color:var(--brown-dark);line-height:1.2;margin-bottom:8px;}
+.editor-intro p{color:var(--muted);font-size:0.9rem;line-height:1.6;}
+.chapter-bar{display:flex;align-items:center;gap:8px;animation:fadeIn 0.5s ease 0.1s both;}
+.chapter-pill{padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;border:1.5px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.chapter-pill.active{background:var(--brown-dark);border-color:var(--brown-dark);color:white;}
+.chapter-pill:hover:not(.active){border-color:var(--brown-light);color:var(--brown);}
+.add-chapter{font-size:0.78rem;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:2px;background:none;border:none;font-family:'Nunito',sans-serif;transition:color 0.2s;}
+.add-chapter:hover{color:var(--brown);}
+.title-area{animation:fadeIn 0.5s ease 0.15s both;}
+.field-label{font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--brown-light);margin-bottom:8px;display:block;}
+.title-input{width:100%;font-family:'Lora',serif;font-size:1.7rem;font-weight:600;color:var(--ink);background:transparent;border:none;outline:none;border-bottom:2px solid var(--border);padding:8px 0 12px;transition:border-color 0.3s;line-height:1.3;}
+.title-input::placeholder{color:var(--sand);font-style:italic;}
+.title-input:focus{border-bottom-color:var(--rose);}
+.subtitle-input{width:100%;font-family:'Lora',serif;font-size:1rem;font-style:italic;color:var(--muted);background:transparent;border:none;outline:none;border-bottom:1px dashed var(--border);padding:6px 0 10px;transition:border-color 0.3s;margin-top:10px;}
+.subtitle-input::placeholder{color:var(--sand);}
+.subtitle-input:focus{border-bottom-color:var(--lavender);}
+.toolbar{display:flex;align-items:center;gap:4px;padding:10px 14px;background:#fffbf5;border:1px solid var(--border);border-radius:12px;flex-wrap:wrap;animation:fadeIn 0.5s ease 0.2s both;}
+.toolbar-btn{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:var(--muted);transition:all 0.15s;font-family:'Nunito',sans-serif;font-weight:700;}
+.toolbar-btn:hover{background:var(--parchment);color:var(--brown);}
+.toolbar-divider{width:1px;height:22px;background:var(--border);margin:0 6px;}
+.toolbar-label{font-size:0.75rem;color:var(--muted);margin-left:auto;font-style:italic;}
+.story-editor-wrap{flex:1;position:relative;animation:fadeIn 0.5s ease 0.25s both;}
+.story-editor{width:100%;min-height:380px;background:#fffbf5;border:1px solid var(--border);border-radius:16px;padding:32px 36px;font-family:'Lora',serif;font-size:1.05rem;color:var(--ink);line-height:1.9;outline:none;resize:none;transition:border-color 0.3s,box-shadow 0.3s;}
+.story-editor:focus{border-color:var(--rose-light);box-shadow:0 0 0 4px rgba(212,116,138,0.08),0 4px 20px rgba(0,0,0,0.05);}
+.story-editor::placeholder{color:var(--sand);font-style:italic;}
+.word-count{position:absolute;bottom:16px;right:20px;font-size:0.75rem;color:var(--brown-light);pointer-events:none;}
+.cw-section{background:var(--amber-light);border:1px solid rgba(232,160,69,0.3);border-radius:12px;padding:16px 20px;animation:fadeIn 0.5s ease 0.3s both;}
+.cw-header{display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.9rem;color:var(--brown-dark);margin-bottom:10px;}
+.cw-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.cw-tag{padding:5px 14px;border-radius:20px;border:1.5px solid var(--sand);font-size:0.8rem;cursor:pointer;font-weight:600;background:white;color:var(--muted);transition:all 0.2s;font-family:'Nunito',sans-serif;}
+.cw-tag:hover{border-color:var(--amber);color:var(--brown);}
+.cw-tag.selected{background:var(--amber);border-color:var(--amber);color:white;}
+.submit-section{display:flex;align-items:center;gap:16px;flex-wrap:wrap;animation:fadeIn 0.5s ease 0.35s both;}
+.btn-publish{background:linear-gradient(135deg,var(--rose),var(--lavender));color:white;border:none;padding:14px 36px;border-radius:30px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(212,116,138,0.3);}
+.btn-publish:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,116,138,0.4);}
+.btn-draft{background:none;border:1.5px dashed var(--border);color:var(--muted);padding:14px 28px;border-radius:30px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:600;transition:all 0.2s;}
+.btn-draft:hover{border-color:var(--brown-light);color:var(--brown);}
+.publish-note{font-size:0.78rem;color:var(--muted);font-style:italic;line-height:1.5;}
+.editor-sidebar{padding:40px 28px;display:flex;flex-direction:column;gap:24px;background:#fffbf5;}
+.sidebar-title{font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--brown-light);margin-bottom:12px;}
+.emotion-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.emotion-btn{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:white;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:600;color:var(--muted);transition:all 0.2s;}
+.emotion-btn:hover{border-color:var(--brown-light);color:var(--brown);}
+.emotion-btn.selected{border-width:2px;}
+.emotion-btn[data-color="rose"].selected{border-color:var(--rose);background:var(--rose-light);color:var(--rose);}
+.emotion-btn[data-color="sage"].selected{border-color:var(--sage);background:var(--sage-light);color:var(--sage);}
+.emotion-btn[data-color="lavender"].selected{border-color:var(--lavender);background:var(--lavender-light);color:var(--lavender);}
+.emotion-btn[data-color="amber"].selected{border-color:var(--amber);background:var(--amber-light);color:var(--amber);}
+.emotion-btn[data-color="brown"].selected{border-color:var(--brown);background:var(--parchment);color:var(--brown);}
+.visibility-options{display:flex;flex-direction:column;gap:8px;}
+.vis-option{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);background:white;cursor:pointer;transition:all 0.2s;}
+.vis-option:hover{border-color:var(--brown-light);}
+.vis-option.selected{border-color:var(--sage);background:var(--sage-light);}
+.vis-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
+.vis-option.selected .vis-radio{border-color:var(--sage);background:var(--sage);}
+.vis-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:white;opacity:0;}
+.vis-option.selected .vis-radio::after{opacity:1;}
+.vis-text h4{font-size:0.85rem;font-weight:700;color:var(--ink);}
+.vis-text p{font-size:0.75rem;color:var(--muted);line-height:1.4;margin-top:2px;}
+.anon-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:10px;background:var(--parchment);border:1px solid var(--border);}
+.anon-info h4{font-size:0.85rem;font-weight:700;color:var(--brown-dark);}
+.anon-info p{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+.toggle-switch{width:44px;height:24px;border-radius:12px;background:var(--border);cursor:pointer;position:relative;transition:background 0.3s;flex-shrink:0;border:none;}
+.toggle-switch.on{background:var(--sage);}
+.toggle-switch::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:white;top:3px;left:3px;transition:transform 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
+.toggle-switch.on::after{transform:translateX(20px);}
+.tips-box{background:var(--lavender-light);border:1px solid rgba(155,139,180,0.3);border-radius:12px;padding:16px;}
+.tips-box h4{font-size:0.8rem;font-weight:700;color:var(--lavender);margin-bottom:10px;}
+.tips-box ul{list-style:none;}
+.tips-box ul li{font-size:0.78rem;color:var(--muted);padding:4px 0;line-height:1.5;display:flex;gap:6px;align-items:flex-start;}
+.tips-box ul li::before{content:'✦';color:var(--lavender);font-size:0.6rem;margin-top:3px;flex-shrink:0;}
+.sidebar-divider{border:none;border-top:1px solid var(--border);}
+.success-overlay{position:fixed;inset:0;background:rgba(253,246,238,0.97);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.5s;text-align:center;padding:40px;}
+.success-overlay.show{opacity:1;pointer-events:all;}
+.success-icon{font-size:4rem;margin-bottom:20px;animation:pulse 2s infinite;}
+.success-overlay h2{font-family:'Lora',serif;font-size:2rem;color:var(--brown-dark);margin-bottom:10px;}
+.success-overlay p{color:var(--muted);max-width:400px;line-height:1.7;margin:0 auto;}
+.success-actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;justify-content:center;}
+
+/* Responsive */
+@media(max-width:900px){
+  #page-auth{grid-template-columns:1fr;}
+  .left-panel{display:none;}
+  .right-panel{padding:40px 24px;}
+  .editor-layout{grid-template-columns:1fr;}
+  .editor-sidebar{border-top:1px solid var(--border);}
+  .editor-main{padding:32px 24px;}
+}
+@media(max-width:600px){
+  .editor-main{padding:24px 16px;}
+  .title-input{font-size:1.3rem;}
+  .story-editor{padding:20px;}
+  .story-wrapper{padding:24px 20px;}
+  .profile-card{padding:24px 18px;}
+  .popup-body{padding:18px 20px;}
+  .popup-head{padding:18px 20px 14px;}
+  .popup-foot{padding:12px 20px 18px;}
+  .profile-btns{flex-direction:column;}
+  .feed-nav-inner{gap:4px;}
+  .nav-btn{padding:8px 16px;font-size:0.8rem;}
+}
+</style>
 </head>
 <body>
 
-<!-- ========== TAB BAR (page navigation) ========== -->
-<div class="tab-bar" id="tabBar">
-  <div class="tab active" data-page="signin" onclick="switchPage('signin')"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</div>
-  <div class="tab" data-page="signup" onclick="switchPage('signup')"><i class="fas fa-user-plus"></i> Sign Up</div>
-  <div class="tab" data-page="welcome" onclick="switchPage('welcome')"><i class="fas fa-heart"></i> Welcome</div>
-  <div class="tab" data-page="emotion" onclick="switchPage('emotion')"><i class="fas fa-smile"></i> Your Vibe</div>
-  <div class="tab" data-page="story" onclick="switchPage('story')"><i class="fas fa-pen"></i> First Story</div>
-  <div class="tab" data-page="feed" onclick="switchPage('feed')"><i class="fas fa-stream"></i> Feed</div>
-</div>
-
-<!-- ========== PAGE CONTAINER (dynamic) ========== -->
-<div class="page-container" id="pageContainer">
-  <!-- sign in page (default visible) -->
-  <div id="signin-page" class="page-card">
-    <h2>welcome back <span style="font-family: Caveat;">💜</span></h2>
-    <div class="sub">sign in to continue your journey</div>
-
-    <div class="field">
-      <label>email</label>
-      <div class="input-wrapper">
-        <i class="far fa-envelope"></i>
-        <input type="email" placeholder="you@example.com" id="signinEmail" value="hello@heart.space">
+<!-- ═════════════════════════════════════════════
+     PAGE 1: AUTH
+═════════════════════════════════════════════ -->
+<div id="page-auth" class="page active">
+  <div class="left-panel">
+    <div class="left-content">
+      <div class="left-logo">💜 HeartSpace</div>
+      <h1 class="left-headline">A place to be <span>heard, healed,</span> and never alone.</h1>
+      <p class="left-sub">Join thousands of people sharing their emotional journeys, finding connection, and supporting each other through life's hardest moments.</p>
+      <div class="left-features">
+        <div class="left-feat"><span class="feat-icon">🎭</span><div class="feat-text"><strong>Mood Rooms</strong>Live spaces for every emotion, right now</div></div>
+        <div class="left-feat"><span class="feat-icon">📖</span><div class="feat-text"><strong>Story Sharing</strong>Tell your truth, anonymously or openly</div></div>
+        <div class="left-feat"><span class="feat-icon">🤝</span><div class="feat-text"><strong>Story Buddy</strong>Matched with someone who truly gets it</div></div>
+        <div class="left-feat"><span class="feat-icon">🛡️</span><div class="feat-text"><strong>Always Safe</strong>No judgment, no toxic positivity, ever</div></div>
       </div>
-    </div>
-    <div class="field">
-      <label>password</label>
-      <div class="input-wrapper">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="••••••••" id="signinPass" value="secret">
+      <div class="left-quote">
+        "The most powerful thing you can do is share your story."
+        <cite>— HeartSpace Community</cite>
       </div>
-    </div>
-
-    <button class="btn" onclick="fakeSignIn()"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
-
-    <div class="link-row">
-      <span style="color:#ac9284;">no account?</span> <a onclick="switchPage('signup')">create one →</a>
-    </div>
-    <hr>
-    <div class="social-buttons">
-      <div class="social-btn"><i class="fab fa-google"></i> Google</div>
-      <div class="social-btn"><i class="fab fa-apple"></i> Apple</div>
     </div>
   </div>
 
-  <!-- sign up page (hidden initially) -->
-  <div id="signup-page" class="page-card hidden">
-    <h2>join HeartSpace</h2>
-    <div class="sub">share your story, find your people</div>
-
-    <div class="field">
-      <label>display name</label>
-      <div class="input-wrapper">
-        <i class="far fa-user"></i>
-        <input type="text" placeholder="Alex" id="signupName">
+  <div class="right-panel">
+    <div class="auth-box">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('signup')">Create Account</button>
+        <button class="tab" onclick="showTab('signin')">Sign In</button>
       </div>
-    </div>
-    <div class="field">
-      <label>email</label>
-      <div class="input-wrapper">
-        <i class="far fa-envelope"></i>
-        <input type="email" placeholder="alex@example.com" id="signupEmail">
+
+      <!-- SIGN UP -->
+      <div class="form-section active" id="signup">
+        <h2 class="form-title">Join HeartSpace 💜</h2>
+        <p class="form-sub">A safe, caring community for real human stories.</p>
+        <div class="field-auth">
+          <label>Display Name</label>
+          <input type="text" id="su-name" placeholder="What should we call you?" />
+        </div>
+        <div class="field-auth">
+          <label>Username</label>
+          <input type="text" id="su-username" placeholder="letters, numbers, underscores" oninput="validateUsername(this)" />
+          <div class="field-error" id="username-error"></div>
+        </div>
+        <div class="field-auth">
+          <label>Email</label>
+          <input type="email" id="su-email" placeholder="you@example.com" />
+        </div>
+        <div class="field-auth">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="su-password" placeholder="At least 6 characters" oninput="checkStrength(this)" />
+            <button class="toggle-pw" onclick="togglePassword('su-password', this)">👁</button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <div class="strength-label" id="strength-label"></div>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="su-anon" onchange="toggleAnonPreview(this)" />
+          <label for="su-anon">I prefer to post anonymously by default
+            <div class="anon-preview" id="anon-preview">🎭 You'll appear as "<span id="anon-name-preview"></span>"</div>
+          </label>
+        </div>
+        <div style="height:12px;"></div>
+        <div class="check-row">
+          <input type="checkbox" id="su-terms" />
+          <label for="su-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <button class="btn-submit" id="su-btn" onclick="handleSignup()" style="margin-top:20px;">Create My Account</button>
+        <div class="divider-auth"><div class="divider-line"></div><span>already have one?</span><div class="divider-line"></div></div>
+        <button class="forgot-link" onclick="showTab('signin')" style="text-align:center;">Sign in instead →</button>
       </div>
-    </div>
-    <div class="field">
-      <label>password</label>
-      <div class="input-wrapper">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="at least 8 characters" id="signupPass">
+
+      <!-- SIGN IN -->
+      <div class="form-section" id="signin">
+        <h2 class="form-title">Welcome back 💜</h2>
+        <p class="form-sub">We missed you. Your community is waiting.</p>
+        <div class="field-auth">
+          <label>Email</label>
+          <input type="email" id="si-email" placeholder="you@example.com" />
+        </div>
+        <div class="field-auth">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="si-password" placeholder="Your password" />
+            <button class="toggle-pw" onclick="togglePassword('si-password', this)">👁</button>
+          </div>
+        </div>
+        <button class="forgot-link" onclick="showTab('forgot')">Forgot password?</button>
+        <button class="btn-submit" id="si-btn" onclick="handleSignin()">Sign In</button>
+        <div class="divider-auth"><div class="divider-line"></div><span>new here?</span><div class="divider-line"></div></div>
+        <button class="forgot-link" onclick="showTab('signup')" style="text-align:center;">Create an account →</button>
       </div>
-    </div>
-    <div class="field">
-      <label>confirm password</label>
-      <div class="input-wrapper">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="" id="signupPass2">
+
+      <!-- FORGOT PASSWORD -->
+      <div class="form-section" id="forgot">
+        <h2 class="form-title">Reset Password</h2>
+        <p class="form-sub">Enter your email and we'll send a reset link (simulated in this demo).</p>
+        <div class="field-auth">
+          <label>Email Address</label>
+          <input type="email" id="fp-email" placeholder="you@example.com" />
+        </div>
+        <div id="forgot-success" style="display:none;text-align:center;padding:20px 0;">
+          <div style="font-size:3rem;">📬</div>
+          <div style="font-family:'Lora',serif;font-size:1.2rem;color:var(--brown-dark);margin:12px 0 8px;">Check your inbox!</div>
+          <div style="font-size:0.85rem;color:var(--muted);">A reset link has been sent (demo — no real email).</div>
+          <button class="btn-submit" onclick="showTab('signin')" style="margin-top:20px;">Back to Sign In</button>
+        </div>
+        <button class="btn-submit" id="fp-btn" onclick="handleForgot()">Send Reset Link</button>
+        <div class="divider-auth"><div class="divider-line"></div></div>
+        <button class="forgot-link" onclick="showTab('signin')" style="text-align:center;">← Back to sign in</button>
       </div>
-    </div>
-
-    <button class="btn" onclick="fakeSignUp()"><i class="fas fa-user-plus"></i> Create Account</button>
-
-    <div class="link-row">
-      <span style="color:#ac9284;">already a member?</span> <a onclick="switchPage('signin')">sign in</a>
-    </div>
-    <hr>
-    <div class="social-buttons">
-      <div class="social-btn"><i class="fab fa-google"></i> Sign up with Google</div>
-    </div>
-  </div>
-
-  <!-- welcome / onboarding page -->
-  <div id="welcome-page" class="page-card hidden">
-    <h2>👋 nice to meet you</h2>
-    <div class="sub">just a couple of quick things before we begin</div>
-
-    <div style="background:#f6eee8; border-radius:28px; padding:1.8rem; margin:1.8rem 0;">
-      <p style="font-size:1.1rem;"><i class="fas fa-quote-left" style="color:#c6848f;"></i> This space is yours — no judgment, no pressure. You can share anonymously or open your heart.</p>
-    </div>
-
-    <label style="font-weight:600; margin-bottom:0.4rem; display:block;">what brings you here? (optional)</label>
-    <div class="pill-selector">
-      <div class="pill" onclick="togglePill(this)">healing</div>
-      <div class="pill" onclick="togglePill(this)">connection</div>
-      <div class="pill" onclick="togglePill(this)">writing</div>
-      <div class="pill" onclick="togglePill(this)">support</div>
-      <div class="pill" onclick="togglePill(this)">just looking</div>
-    </div>
-
-    <div class="flex" style="margin-top:2rem;">
-      <button class="btn btn-outline" style="width:50%;" onclick="switchPage('signin')">skip</button>
-      <button class="btn" style="width:50%;" onclick="switchPage('emotion')">continue →</button>
-    </div>
-  </div>
-
-  <!-- emotion / vibe page -->
-  <div id="emotion-page" class="page-card hidden">
-    <h2>how are you feeling today?</h2>
-    <div class="sub">pick a few – this helps us personalize your experience</div>
-
-    <div class="pill-selector" style="margin:2rem 0;">
-      <div class="pill" onclick="togglePill(this)">😢 grieving</div>
-      <div class="pill" onclick="togglePill(this)">🌱 hopeful</div>
-      <div class="pill" onclick="togglePill(this)">❤️ loved</div>
-      <div class="pill" onclick="togglePill(this)">🌀 anxious</div>
-      <div class="pill" onclick="togglePill(this)">🕊️ peaceful</div>
-      <div class="pill" onclick="togglePill(this)">💔 heartbroken</div>
-      <div class="pill" onclick="togglePill(this)">🌟 joyful</div>
-      <div class="pill" onclick="togglePill(this)">🤔 lost</div>
-      <div class="pill" onclick="togglePill(this)">🔥 angry</div>
-      <div class="pill" onclick="togglePill(this)">✨ inspired</div>
-    </div>
-
-    <div class="flex">
-      <button class="btn btn-outline" style="width:40%;" onclick="switchPage('welcome')">back</button>
-      <button class="btn" style="width:60%;" onclick="switchPage('story')">next: your first story</button>
-    </div>
-  </div>
-
-  <!-- first story page (mini version of compose) -->
-  <div id="story-page" class="page-card hidden">
-    <h2>share a little something</h2>
-    <div class="sub">it can be one sentence or one chapter – no rules</div>
-
-    <div class="field">
-      <label>story title (optional)</label>
-      <div class="input-wrapper">
-        <i class="fas fa-heading"></i>
-        <input type="text" placeholder="e.g., 'today I felt...'" id="firstTitle">
-      </div>
-    </div>
-    <div class="field">
-      <label>your story</label>
-      <div style="background:white; border:1.5px solid #f0ddd2; border-radius:28px; padding:16px 22px;">
-        <textarea id="firstBody" rows="4" style="width:100%; border:none; background:transparent; resize:vertical; font-family:inherit;" placeholder="I remember the first time..."></textarea>
-      </div>
-    </div>
-
-    <div style="display:flex; align-items:center; gap:12px; margin:1.2rem 0;">
-      <span style="display:flex; align-items:center; gap:6px;"><i class="far fa-eye-slash"></i> post anonymously?</span>
-      <div class="toggle-switch" style="width:44px;height:24px;background:#dccfc7;border-radius:30px;position:relative; cursor:pointer;" onclick="this.classList.toggle('active')">
-        <div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:0.2s;"></div>
-      </div>
-    </div>
-
-    <div class="flex">
-      <button class="btn btn-outline" style="width:40%;" onclick="switchPage('emotion')">back</button>
-      <button class="btn" style="width:60%;" onclick="publishFirstStory()">publish & see feed</button>
-    </div>
-    <style>.toggle-switch.active { background:#9db6a2; } .toggle-switch.active div { left:23px; }</style>
-  </div>
-
-  <!-- feed page (live mini feed) -->
-  <div id="feed-page" class="page-card hidden">
-    <h2><i class="fas fa-stream" style="color:#b58c89;"></i> community feed</h2>
-    <div class="sub">stories shared by hearts like yours</div>
-
-    <div id="miniFeed" style="margin: 1.8rem 0;">
-      <!-- dynamic from local storage -->
-    </div>
-
-    <div style="display:flex; gap:12px;">
-      <button class="btn btn-outline" style="width:50%;" onclick="switchPage('story')">write another</button>
-      <button class="btn" style="width:50%;" onclick="switchPage('signin')">← sign in page</button>
-    </div>
-    <div style="margin-top:1rem; text-align:center;">
-      <a onclick="switchPage('welcome')" style="cursor:pointer;color:#b4767e;">back to welcome</a>
     </div>
   </div>
 </div>
 
+<!-- ═════════════════════════════════════════════
+     PAGE 2: FEED
+═════════════════════════════════════════════ -->
+<div id="page-feed" class="page">
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo-heart">💜</div>
+      <span class="logo-name">HeartSpace</span>
+      <p class="logo-tagline">Your story deserves to be heard.</p>
+    </div>
+  </div>
+
+  <nav class="feed-nav">
+    <div class="feed-nav-inner">
+      <button class="nav-btn active" data-target="explore"><span class="nav-icon">🔍</span> Explore</button>
+      <button class="nav-btn" data-target="profile"><span class="nav-icon">👤</span> Profile</button>
+      <button class="write-fab" onclick="navigateTo('editor')">✍️ Write Story</button>
+    </div>
+  </nav>
+
+  <!-- EXPLORE -->
+  <section id="explore" class="feed-section active">
+    <p class="section-label">What are you feeling today?</p>
+    <div class="emotion-row">
+      <button class="emotion-chip joy" data-emotion="Joy">😊 Joy</button>
+      <button class="emotion-chip sadness" data-emotion="Sadness">😢 Sadness</button>
+      <button class="emotion-chip anxiety" data-emotion="Anxiety">😰 Anxiety</button>
+      <button class="emotion-chip anger" data-emotion="Anger">😠 Anger</button>
+      <button class="emotion-chip love" data-emotion="Love">❤️ Love</button>
+      <button class="emotion-chip gratitude" data-emotion="Gratitude">🙏 Gratitude</button>
+      <button class="emotion-chip hope" data-emotion="Hope">✨ Hope</button>
+      <button class="emotion-chip fear" data-emotion="Fear">😨 Fear</button>
+    </div>
+
+    <div class="story-wrapper" id="storyCard">
+      <div class="story-top">
+        <div class="story-avatar-circle" id="storyAvatarEmoji">🌻</div>
+        <div>
+          <div class="story-author" id="storyAuthor">QuietSunflower42</div>
+          <div class="story-time" id="storyTime">2 hours ago</div>
+        </div>
+        <div class="story-emotion-badge" id="storyEmotionBadge">Hope</div>
+      </div>
+      <div class="story-body" id="storyBody">Today was hard, but I made it through…</div>
+      <div class="story-footer">
+        <button class="story-act-btn" id="likeBtn">❤️ <span id="likeCount">45</span></button>
+        <button class="story-act-btn">💬 <span id="commentCount">12</span></button>
+        <button class="story-act-btn">🔗 Share</button>
+      </div>
+    </div>
+
+    <div class="loading-row" id="loadingRow">
+      <div class="spinner"></div>
+      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;">Loading more stories…</p>
+    </div>
+
+    <div class="story-nav-row">
+      <button class="story-nav-arrow" id="prevBtn" disabled>←</button>
+      <span class="story-counter" id="storyCounter">1 / 5</span>
+      <button class="story-nav-arrow" id="nextBtn">→</button>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profile" class="feed-section">
+    <div class="profile-card">
+      <div class="profile-avatar-wrap">
+        <div class="avatar-big" id="profileAvatar" title="Edit avatar">
+          <span id="avatarEmoji">🌻</span>
+          <div class="avatar-edit-overlay">✏️</div>
+        </div>
+        <div class="anon-name" id="displayAnonName">QuietSunflower42</div>
+        <div class="anon-note">🔒 Anonymous identity · never revealed</div>
+        <div class="edit-note">You can edit your avatar &amp; bio once per week.</div>
+      </div>
+      <div class="pfield">
+        <label>Your Real Name <span style="font-size:0.7rem;color:var(--muted);text-transform:none;">(private — never shown)</span></label>
+        <input type="text" id="realName" placeholder="Only you can see this" />
+      </div>
+      <div class="pfield">
+        <label>About You</label>
+        <textarea id="userBio" maxlength="500" placeholder="Tell us about yourself…"></textarea>
+        <div class="char-hint"><span id="bioCount">0</span>/500</div>
+      </div>
+      <div class="security-block">
+        <h4>Security &amp; Authentication</h4>
+        <div class="security-row">
+          <span class="sec-icon">📧</span>
+          <span class="sec-label">Email</span>
+          <input type="email" id="userEmail" placeholder="your@email.com" />
+          <button class="verify-btn" onclick="showToast('Verification email sent! (demo)', 'info')">Verify</button>
+        </div>
+        <div class="security-row">
+          <span class="sec-icon">📱</span>
+          <span class="sec-label">Phone</span>
+          <input type="tel" id="userPhone" placeholder="+1 555 123 4567" />
+          <button class="verify-btn" onclick="showToast('SMS sent! (demo)', 'info')">Verify</button>
+        </div>
+        <div class="security-row toggle-row">
+          <span class="sec-icon">🔒</span>
+          <span class="sec-label">Two-Factor Auth</span>
+          <label class="switch"><input type="checkbox" id="twoFA"><span class="slider-toggle"></span></label>
+        </div>
+      </div>
+      <div class="profile-btns">
+        <button class="btn-psave" id="saveProfileBtn">Save Changes</button>
+        <button class="btn-logout" id="logoutBtn">🚪 Logout</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- STORY POPUP (write quick) -->
+<div class="overlay" id="storyOverlay">
+  <div class="popup-box">
+    <div class="popup-head">
+      <h3>Share your <span id="popupEmotion">Joy</span> story 💜</h3>
+      <button class="popup-close" onclick="hideOverlay('storyOverlay')">✕</button>
+    </div>
+    <div class="popup-body">
+      <textarea class="story-write-area" id="storyWriteArea" maxlength="2000" placeholder="Write your story here… you're not alone in this feeling."></textarea>
+      <div class="popup-opts">
+        <label class="anon-check"><input type="checkbox" id="postAnon" checked />Post Anonymously</label>
+        <span class="char-hint"><span id="storyCharCount">0</span>/2000</span>
+      </div>
+    </div>
+    <div class="popup-foot">
+      <button class="btn-cancel" onclick="hideOverlay('storyOverlay')">Cancel</button>
+      <button class="btn-primary" id="submitStoryBtn">Share Story 💜</button>
+    </div>
+  </div>
+</div>
+
+<!-- AVATAR POPUP -->
+<div class="overlay" id="avatarOverlay">
+  <div class="popup-box">
+    <div class="popup-head">
+      <h3>Choose Your Avatar</h3>
+      <button class="popup-close" onclick="hideOverlay('avatarOverlay')">✕</button>
+    </div>
+    <div class="popup-body">
+      <div class="opt-label">Pick a character</div>
+      <div class="avatar-grid">
+        <div class="avatar-opt selected" data-emoji="🌻">🌻</div>
+        <div class="avatar-opt" data-emoji="🌊">🌊</div>
+        <div class="avatar-opt" data-emoji="🌙">🌙</div>
+        <div class="avatar-opt" data-emoji="⭐">⭐</div>
+        <div class="avatar-opt" data-emoji="🌿">🌿</div>
+        <div class="avatar-opt" data-emoji="🦋">🦋</div>
+        <div class="avatar-opt" data-emoji="🌺">🌺</div>
+        <div class="avatar-opt" data-emoji="🦉">🦉</div>
+        <div class="avatar-opt" data-emoji="🌈">🌈</div>
+      </div>
+    </div>
+    <div class="popup-foot">
+      <button class="btn-cancel" onclick="hideOverlay('avatarOverlay')">Cancel</button>
+      <button class="btn-primary" id="saveAvatarBtn">Save Avatar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════
+     PAGE 3: STORY EDITOR
+═════════════════════════════════════════════ -->
+<div id="page-editor" class="page">
+  <nav class="editor-nav">
+    <button class="nav-logo" onclick="navigateTo('feed')">💜 HeartSpace</button>
+    <div class="nav-right">
+      <div class="autosave" id="autosaveStatus"><div class="autosave-dot"></div> Draft saved</div>
+      <button class="btn-ghost" onclick="previewStory()">Preview</button>
+      <button class="btn-enav-save" onclick="saveDraft()">💾 Save Draft</button>
+    </div>
+  </nav>
+  <div class="editor-progress-bar" id="editorProgressBar"></div>
+
+  <div class="editor-layout">
+    <div class="editor-main">
+      <div class="editor-intro">
+        <h1>Your story matters. 🌿</h1>
+        <p>Write freely. There's no wrong way to share. Your words may be exactly what someone else needs to hear today.</p>
+      </div>
+
+      <div class="chapter-bar">
+        <div class="chapter-pill active" onclick="selectChapter(this)">Chapter 1</div>
+        <div class="chapter-pill" onclick="selectChapter(this)">Chapter 2</div>
+        <button class="add-chapter" onclick="addChapter()">+ Add chapter</button>
+      </div>
+
+      <div class="title-area">
+        <label class="field-label">✦ Story Title</label>
+        <input class="title-input" type="text" placeholder="Give your story a name…" id="storyTitle" oninput="updateProgress()" />
+        <input class="subtitle-input" type="text" id="storySubtitle" placeholder="A brief subtitle or opening line (optional)…" />
+      </div>
+
+      <div class="toolbar">
+        <button class="toolbar-btn" title="Bold" onclick="formatText('bold')"><b>B</b></button>
+        <button class="toolbar-btn" title="Italic" onclick="formatText('italic')"><i>I</i></button>
+        <button class="toolbar-btn" title="Underline" onclick="formatText('underline')"><u>U</u></button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" title="Blockquote" onclick="insertQuote()">"</button>
+        <button class="toolbar-btn" title="Heading">H</button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" title="Add image">🖼</button>
+        <button class="toolbar-btn" title="Voice note">🎙</button>
+        <button class="toolbar-btn" title="Add poem">🌸</button>
+        <div class="toolbar-divider"></div>
+        <span class="toolbar-label">Write from the heart ✦</span>
+      </div>
+
+      <div class="story-editor-wrap">
+        <textarea class="story-editor" id="editorBody"
+          placeholder="Begin your story here…&#10;&#10;Maybe it starts with a feeling. Maybe with a moment. Maybe with a sentence that's been living in your chest for years.&#10;&#10;Whatever it is — this space is yours."
+          oninput="updateWordCount(); updateProgress()" rows="16"></textarea>
+        <div class="word-count" id="wordCount">0 words</div>
+      </div>
+
+      <div class="cw-section">
+        <div class="cw-header">⚠️ Content Warnings <span style="font-weight:400;font-size:0.8rem;color:var(--muted);margin-left:4px;">— Select all that apply</span></div>
+        <div class="cw-tags">
+          <button class="cw-tag" onclick="toggleCW(this)">Grief &amp; Loss</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Mental Health</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Trauma</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Relationships</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Family</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Addiction</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Illness</button>
+          <button class="cw-tag" onclick="toggleCW(this)">Identity</button>
+          <button class="cw-tag" onclick="toggleCW(this)">None needed</button>
+        </div>
+      </div>
+
+      <div class="submit-section">
+        <button class="btn-publish" onclick="publishStory()">💜 Share My Story</button>
+        <button class="btn-draft" onclick="saveDraft()">Save as Draft</button>
+        <p class="publish-note">Your story will be shared<br>with kindness &amp; care.</p>
+      </div>
+    </div>
+
+    <div class="editor-sidebar">
+      <div>
+        <div class="sidebar-title">💫 How does this story feel?</div>
+        <div class="emotion-grid">
+          <button class="emotion-btn" data-color="rose" onclick="selectEditorEmotion(this)"><span>😢</span> Grief</button>
+          <button class="emotion-btn" data-color="sage" onclick="selectEditorEmotion(this)"><span>🌱</span> Healing</button>
+          <button class="emotion-btn" data-color="lavender" onclick="selectEditorEmotion(this)"><span>😰</span> Anxiety</button>
+          <button class="emotion-btn" data-color="amber" onclick="selectEditorEmotion(this)"><span>💛</span> Hope</button>
+          <button class="emotion-btn" data-color="rose" onclick="selectEditorEmotion(this)"><span>❤️</span> Love</button>
+          <button class="emotion-btn" data-color="brown" onclick="selectEditorEmotion(this)"><span>😤</span> Anger</button>
+          <button class="emotion-btn" data-color="sage" onclick="selectEditorEmotion(this)"><span>🕊️</span> Peace</button>
+          <button class="emotion-btn" data-color="lavender" onclick="selectEditorEmotion(this)"><span>🌀</span> Confused</button>
+        </div>
+      </div>
+      <hr class="sidebar-divider">
+      <div>
+        <div class="sidebar-title">🌍 Who can read this?</div>
+        <div class="visibility-options">
+          <div class="vis-option selected" onclick="selectVisibility(this)">
+            <div class="vis-radio"></div>
+            <div class="vis-text"><h4>Everyone</h4><p>Shared with the whole HeartSpace community</p></div>
+          </div>
+          <div class="vis-option" onclick="selectVisibility(this)">
+            <div class="vis-radio"></div>
+            <div class="vis-text"><h4>My Circles Only</h4><p>Visible only to your support groups</p></div>
+          </div>
+          <div class="vis-option" onclick="selectVisibility(this)">
+            <div class="vis-radio"></div>
+            <div class="vis-text"><h4>Private (Just Me)</h4><p>Saved to your journal, not shared</p></div>
+          </div>
+        </div>
+      </div>
+      <hr class="sidebar-divider">
+      <div>
+        <div class="sidebar-title">👤 Identity</div>
+        <div class="anon-toggle">
+          <div class="anon-info">
+            <h4>Post Anonymously</h4>
+            <p id="editorAnonName">You'll appear as "…"</p>
+          </div>
+          <button class="toggle-switch" id="editorAnonToggle" onclick="this.classList.toggle('on')"></button>
+        </div>
+      </div>
+      <hr class="sidebar-divider">
+      <div class="tips-box">
+        <h4>✦ A gentle reminder</h4>
+        <ul>
+          <li>Write for yourself first — others second</li>
+          <li>You don't need to justify your feelings</li>
+          <li>There's no minimum or maximum length</li>
+          <li>You can edit or delete this anytime</li>
+          <li>Someone needs your exact story today</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-overlay" id="editorSuccess">
+    <div class="success-icon">💜</div>
+    <h2>Your story is out there.</h2>
+    <p>Thank you for being brave enough to share. Your words are now part of a community that cares. Someone, somewhere, is reading this and feeling less alone.</p>
+    <div class="success-actions">
+      <button class="btn-publish" onclick="resetEditor()">✍️ Write Another</button>
+      <button class="btn-draft" onclick="navigateTo('feed')">Go to Feed</button>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL TOAST -->
+<div id="toast"></div>
+
+<!-- ═════════════════════════════════════════════
+     BACKEND SIMULATION + APP LOGIC
+═════════════════════════════════════════════ -->
 <script>
-  // ----- page switching -----
-  function switchPage(pageId) {
-    // hide all page cards
-    const pages = ['signin', 'signup', 'welcome', 'emotion', 'story', 'feed'];
-    pages.forEach(p => {
-      const el = document.getElementById(p + '-page');
-      if (el) el.classList.add('hidden');
-    });
-    // show selected
-    const activeEl = document.getElementById(pageId + '-page');
-    if (activeEl) activeEl.classList.remove('hidden');
+'use strict';
 
-    // update active tab
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.classList.remove('active');
-      if (tab.dataset.page === pageId) tab.classList.add('active');
-    });
-
-    // if feed page is shown, refresh feed content
-    if (pageId === 'feed') renderMiniFeed();
+/* ─── SIMULATED DATABASE ─────────────────────── */
+const DB = {
+  users: JSON.parse(localStorage.getItem('hs_db_users') || '[]'),
+  stories: JSON.parse(localStorage.getItem('hs_db_stories') || JSON.stringify([
+    { id:1, author:'QuietSunflower42', avatar:'🌻', time:'2 hours ago', emotion:'Hope', content:"Today was hard, but I made it through. Sometimes that's enough. Tomorrow is a new day, and I'm choosing to believe it will be better. If you're reading this and struggling too, know that you're not alone. We carry our weight differently, but we carry it together.", likes:45, comments:12, userId:null },
+    { id:2, author:'BraveOcean88', avatar:'🌊', time:'5 hours ago', emotion:'Anxiety', content:"The anxiety has been overwhelming lately. But I'm learning that it's okay to not be okay. I'm taking it one breath at a time, one moment at a time. We're all doing the best we can with what we have.", likes:67, comments:23, userId:null },
+    { id:3, author:'GentleRain15', avatar:'🌧️', time:'8 hours ago', emotion:'Sadness', content:"Lost someone dear to me recently. The grief comes in waves. Some days are harder than others, but I'm allowing myself to feel everything. Healing isn't linear, and that's okay. Be gentle with yourself today.", likes:89, comments:34, userId:null },
+    { id:4, author:'WarmLight33', avatar:'✨', time:'1 day ago', emotion:'Gratitude', content:"Found myself smiling today for the first time in weeks. It was just a small moment — a stranger held the door, my coffee was perfect, the sun came out. Sometimes the little things carry everything we need.", likes:112, comments:45, userId:null },
+    { id:5, author:'StrongTree91', avatar:'🌿', time:'1 day ago', emotion:'Love', content:"After years of working on myself, I finally feel ready to love again. Not just others, but myself too. Self-love isn't selfish — it's necessary. You cannot pour from an empty cup, so start filling yours.", likes:156, comments:67, userId:null }
+  ])),
+  save() {
+    localStorage.setItem('hs_db_users', JSON.stringify(this.users));
+    localStorage.setItem('hs_db_stories', JSON.stringify(this.stories));
   }
+};
 
-  // pill toggles (for interest/feeling)
-  window.togglePill = function(pill) {
-    pill.classList.toggle('selected');
-  };
+/* ─── AUTH SERVICE ───────────────────────────── */
+const AuthService = {
+  signup({ displayName, username, email, password, preferAnonymous }) {
+    if (DB.users.find(u => u.email === email))
+      return { success:false, message:'An account with this email already exists.' };
+    if (DB.users.find(u => u.username === username))
+      return { success:false, message:'Username is already taken. Try another.' };
+    const user = {
+      id: Date.now(),
+      displayName, username, email,
+      passwordHash: btoa(password), // simple encode (demo only)
+      preferAnonymous,
+      anonName: generateAnonName(),
+      avatarEmoji: '🌻',
+      bio: '', realName: '', phone: '', twoFA: false,
+      lastAvatarEdit: null,
+    };
+    DB.users.push(user);
+    DB.save();
+    const token = btoa(JSON.stringify({ id: user.id, exp: Date.now() + 86400000 }));
+    return { success:true, token, user: sanitize(user) };
+  },
+  signin({ email, password }) {
+    const user = DB.users.find(u => u.email === email);
+    if (!user) return { success:false, message:'No account found with that email.' };
+    if (user.passwordHash !== btoa(password)) return { success:false, message:'Incorrect password.' };
+    const token = btoa(JSON.stringify({ id: user.id, exp: Date.now() + 86400000 }));
+    return { success:true, token, user: sanitize(user) };
+  },
+  verify(token) {
+    try {
+      const { id, exp } = JSON.parse(atob(token));
+      if (Date.now() > exp) return null;
+      const user = DB.users.find(u => u.id === id);
+      return user ? sanitize(user) : null;
+    } catch { return null; }
+  },
+  updateUser(id, data) {
+    const idx = DB.users.findIndex(u => u.id === id);
+    if (idx === -1) return false;
+    Object.assign(DB.users[idx], data);
+    DB.save();
+    return sanitize(DB.users[idx]);
+  }
+};
 
-  // fake sign in (just moves to welcome)
-  window.fakeSignIn = function() {
-    const email = document.getElementById('signinEmail').value.trim();
-    if (!email) { alert('demo: any email works'); } else {
-      alert(`signed in as ${email} (demo)`);
-      switchPage('welcome');
-    }
-  };
-
-  window.fakeSignUp = function() {
-    const name = document.getElementById('signupName').value.trim();
-    if (!name) { alert('please enter a name (demo)'); return; }
-    alert(`welcome, ${name}! account created (demo)`);
-    switchPage('welcome');
-  };
-
-  // publish first story from "story" page -> goes to feed
-  window.publishFirstStory = function() {
-    const title = document.getElementById('firstTitle').value.trim() || 'untitled moment';
-    const body = document.getElementById('firstBody').value.trim();
-    if (!body) { alert('write at least a short sentence 💜'); return; }
-
-    // get anon status from toggle (simple)
-    const toggle = document.querySelector('#story-page .toggle-switch');
-    const isAnon = toggle.classList.contains('active');
-
+/* ─── STORY SERVICE ──────────────────────────── */
+const StoryService = {
+  getAll() { return [...DB.stories].reverse(); },
+  create({ title, body, emotion, visibility, anonymous, userId, userData }) {
     const story = {
       id: Date.now(),
-      title: title,
-      body: body,
-      emotion: 'reflection',
-      anon: isAnon,
-      time: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
-      date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' })
+      author: anonymous ? userData.anonName : userData.displayName,
+      avatar: userData.avatarEmoji,
+      time: 'Just now',
+      emotion: emotion || 'Story',
+      content: body,
+      title, visibility, userId,
+      likes: 0, comments: 0,
     };
+    DB.stories.push(story);
+    DB.save();
+    return story;
+  },
+  saveDraft({ title, body, userId }) {
+    let drafts = JSON.parse(localStorage.getItem('hs_drafts') || '[]');
+    drafts = drafts.filter(d => d.userId !== userId);
+    drafts.push({ title, body, userId, savedAt: new Date().toISOString() });
+    localStorage.setItem('hs_drafts', JSON.stringify(drafts));
+  },
+  getDraft(userId) {
+    const drafts = JSON.parse(localStorage.getItem('hs_drafts') || '[]');
+    return drafts.find(d => d.userId === userId) || null;
+  }
+};
 
-    let stories = JSON.parse(localStorage.getItem('hs_stories') || '[]');
-    stories.unshift(story);
-    localStorage.setItem('hs_stories', JSON.stringify(stories));
+/* ─── HELPERS ────────────────────────────────── */
+function sanitize(user) {
+  const { passwordHash, ...safe } = user;
+  return safe;
+}
+const ADJECTIVES = ['Quiet','Brave','Gentle','Warm','Strong','Peaceful','Hopeful','Kind','Wise','Calm','Tender','Wild','Golden','Silver','Soft'];
+const NOUNS = ['Sunflower','Ocean','Rain','Light','Tree','Mountain','River','Star','Moon','Cloud','Sparrow','Willow','Ember','Tide','Dawn'];
+function generateAnonName() {
+  const a = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+  const n = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+  const num = Math.floor(Math.random() * 99) + 1;
+  return `${a}${n}${num}`;
+}
 
-    // clear field
-    document.getElementById('firstTitle').value = '';
-    document.getElementById('firstBody').value = '';
+/* ─── SESSION ────────────────────────────────── */
+let currentUser = null;
+let currentToken = null;
 
-    alert('✨ story published!');
-    switchPage('feed');
-    renderMiniFeed();
-  };
+function loadSession() {
+  const token = localStorage.getItem('hs_token');
+  if (token) {
+    const user = AuthService.verify(token);
+    if (user) { currentUser = user; currentToken = token; return true; }
+    localStorage.removeItem('hs_token');
+  }
+  return false;
+}
+function saveSession(token, user) {
+  localStorage.setItem('hs_token', token);
+  currentToken = token;
+  currentUser = user;
+}
+function clearSession() {
+  localStorage.removeItem('hs_token');
+  currentToken = null;
+  currentUser = null;
+}
 
-  // render feed (mini version) inside feed page
-  function renderMiniFeed() {
-    const container = document.getElementById('miniFeed');
-    if (!container) return;
-    const stories = JSON.parse(localStorage.getItem('hs_stories') || '[]');
-    if (stories.length === 0) {
-      container.innerHTML = '<div style="background:#f5eae2; border-radius:28px; padding:2rem; text-align:center;">✨ no stories yet — be the first to share.</div>';
-      return;
-    }
-    let html = '';
-    stories.slice(0, 5).forEach(s => {
-      html += `
-        <div style="background:white; border-radius:22px; padding:1.2rem 1.4rem; margin-bottom:1rem; border-left:5px solid #e5b7bc;">
-          <div style="display:flex; gap:12px; font-size:0.7rem; color:#8a7165;"> 
-            <span>${s.anon ? '👤 anonymous' : '🌟 member'}</span><span>${s.date} · ${s.time}</span>
-          </div>
-          <div style="font-weight:700; font-size:1.1rem;">${escapeHTML(s.title)}</div>
-          <div style="font-size:0.9rem; color:#4d3f35; background:#faf1ec; padding:8px 12px; border-radius:16px; margin:8px 0 4px;">${escapeHTML(s.body.substring(0,70))}${s.body.length>70?'…':''}</div>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
+/* ─── PAGE ROUTING ───────────────────────────── */
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  window.scrollTo(0,0);
+  if (page === 'feed') refreshFeedUI();
+  if (page === 'editor') refreshEditorUI();
+}
+
+/* ─── INIT ───────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  if (loadSession()) {
+    navigateTo('feed');
+  } else {
+    navigateTo('auth');
   }
 
-  function escapeHTML(str) {
-    return String(str).replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m;
+  // Generate anon name preview
+  document.getElementById('anon-name-preview').textContent = generateAnonName();
+
+  // Feed nav setup
+  document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn[data-target]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.feed-section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('active');
     });
-  }
-
-  // initialize: make sure signin is visible, prefill some feed if empty
-  window.onload = function() {
-    switchPage('signin');
-    // seed sample stories if empty
-    if (!localStorage.getItem('hs_stories') || JSON.parse(localStorage.getItem('hs_stories')).length === 0) {
-      const samples = [
-        { id: 1, title: 'a crack of light', body: 'even in darkness, i find small sparks.', emotion: 'Hope', anon: false, time: '3h ago', date: 'Feb 26' },
-        { id: 2, title: 'grief sits with me', body: 'i used to fight it. now i offer tea.', emotion: 'Grief', anon: true, time: 'yesterday', date: 'Feb 25' },
-      ];
-      localStorage.setItem('hs_stories', JSON.stringify(samples));
-    }
-    // pre-fill some fields for demo
-    document.getElementById('signupName') && (document.getElementById('signupName').value = 'Sam');
-    document.getElementById('signupEmail') && (document.getElementById('signupEmail').value = 'sam@heart.space');
-    document.getElementById('firstBody') && (document.getElementById('firstBody').value = 'Today i realized i am enough.');
-  };
-
-  // make toggle switch on story page interactive (simple)
-  document.querySelector('#story-page .toggle-switch')?.addEventListener('click', function(e) {
-    e.currentTarget.classList.toggle('active');
   });
-</script>
-<!-- mini style addition for toggle -->
-<style>
-  .toggle-switch.active { background: #9db6a2; }
-  .toggle-switch.active div { left: 23px; }
-</style>
 
+  // Emotion chips
+  document.querySelectorAll('.emotion-chip').forEach(chip => {
+    chip.addEventListener('click', () => openStoryPopup(chip.dataset.emotion));
+  });
+
+  // Story navigation
+  setupStoryNav();
+
+  // Story quick write
+  document.getElementById('storyWriteArea').addEventListener('input', e => {
+    document.getElementById('storyCharCount').textContent = e.target.value.length;
+  });
+  document.getElementById('submitStoryBtn').addEventListener('click', quickSubmitStory);
+
+  // Avatar editor
+  document.querySelectorAll('.avatar-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.avatar-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+  document.getElementById('saveAvatarBtn').addEventListener('click', saveAvatar);
+
+  // Profile
+  document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  document.getElementById('profileAvatar').addEventListener('click', () => showOverlay('avatarOverlay'));
+  document.getElementById('userBio').addEventListener('input', e => {
+    document.getElementById('bioCount').textContent = e.target.value.length;
+  });
+
+  // Keyboard enter
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      const active = document.querySelector('#page-auth .form-section.active')?.id;
+      if (active === 'signup') handleSignup();
+      if (active === 'signin') handleSignin();
+      if (active === 'forgot') handleForgot();
+    }
+  });
+
+  // Editor auto-save
+  document.getElementById('editorBody').addEventListener('input', () => {
+    const as = document.getElementById('autosaveStatus');
+    as.innerHTML = '<div class="autosave-dot"></div> Unsaved changes…';
+    clearTimeout(window._autoSave);
+    window._autoSave = setTimeout(() => {
+      if (currentUser) {
+        StoryService.saveDraft({
+          title: document.getElementById('storyTitle').value,
+          body: document.getElementById('editorBody').value,
+          userId: currentUser.id
+        });
+      }
+      as.innerHTML = '<div class="autosave-dot"></div> Draft saved ✓';
+    }, 2000);
+  });
+  setInterval(() => {
+    if (document.getElementById('page-editor').classList.contains('active')) saveDraft();
+  }, 30000);
+});
+
+/* ─── AUTH FUNCTIONS ─────────────────────────── */
+function showTab(tab) {
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tab)?.classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  if (tab === 'signup') tabs[0]?.classList.add('active');
+  if (tab === 'signin') tabs[1]?.classList.add('active');
+}
+
+function togglePassword(id, btn) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function checkStrength(input) {
+  const val = input.value;
+  const fill = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  let cls = '', txt = '';
+  if (val.length === 0) { cls = ''; txt = ''; }
+  else if (val.length < 6) { cls = 'weak'; txt = 'Too short'; }
+  else if (val.length < 8 || !/[0-9]/.test(val)) { cls = 'fair'; txt = 'Fair'; }
+  else if (!/[!@#$%^&*]/.test(val)) { cls = 'good'; txt = 'Good'; }
+  else { cls = 'strong'; txt = 'Strong 💪'; }
+  fill.className = 'strength-fill ' + cls;
+  label.textContent = txt;
+}
+
+function validateUsername(input) {
+  const val = input.value;
+  const err = document.getElementById('username-error');
+  const valid = /^[a-zA-Z0-9_]{3,30}$/.test(val);
+  if (!valid && val.length > 0) {
+    input.classList.add('error-input');
+    err.textContent = 'Only letters, numbers, underscores. 3-30 chars.';
+  } else {
+    input.classList.remove('error-input');
+    err.textContent = '';
+  }
+}
+
+function toggleAnonPreview(cb) {
+  const prev = document.getElementById('anon-preview');
+  prev.classList.toggle('show', cb.checked);
+}
+
+async function handleSignup() {
+  const name     = document.getElementById('su-name').value.trim();
+  const username = document.getElementById('su-username').value.trim();
+  const email    = document.getElementById('su-email').value.trim();
+  const password = document.getElementById('su-password').value;
+  const terms    = document.getElementById('su-terms').checked;
+  const anon     = document.getElementById('su-anon').checked;
+
+  if (!name || !username || !email || !password) return showToast('Please fill all fields.','error');
+  if (!terms) return showToast('Please accept the terms to continue.','error');
+  if (password.length < 6) return showToast('Password must be at least 6 characters.','error');
+  if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) return showToast('Invalid username format.','error');
+
+  const btn = document.getElementById('su-btn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  // Simulate network delay
+  await delay(800);
+  const result = AuthService.signup({ displayName: name, username, email, password, preferAnonymous: anon });
+  btn.disabled = false; btn.textContent = 'Create My Account';
+
+  if (!result.success) return showToast(result.message,'error');
+  saveSession(result.token, result.user);
+  showToast(`Welcome to HeartSpace, ${result.user.displayName}! 💜`,'success');
+  await delay(1500);
+  navigateTo('feed');
+}
+
+async function handleSignin() {
+  const email    = document.getElementById('si-email').value.trim();
+  const password = document.getElementById('si-password').value;
+
+  if (!email || !password) return showToast('Please enter your email and password.','error');
+
+  const btn = document.getElementById('si-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+
+  await delay(700);
+  const result = AuthService.signin({ email, password });
+  btn.disabled = false; btn.textContent = 'Sign In';
+
+  if (!result.success) return showToast(result.message,'error');
+  saveSession(result.token, result.user);
+  showToast(`Welcome back, ${result.user.displayName}! 💜`,'success');
+  await delay(1200);
+  navigateTo('feed');
+}
+
+async function handleForgot() {
+  const email = document.getElementById('fp-email').value.trim();
+  if (!email) return showToast('Please enter your email address.','error');
+  const btn = document.getElementById('fp-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  await delay(1000);
+  btn.style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'block';
+}
+
+/* ─── FEED FUNCTIONS ─────────────────────────── */
+let stories = [];
+let currentStoryIdx = 0;
+let likedStories = new Set();
+let pendingAvatar = null;
+
+function refreshFeedUI() {
+  if (!currentUser) return;
+  stories = StoryService.getAll();
+  currentStoryIdx = 0;
+  renderStory();
+  // Profile
+  document.getElementById('displayAnonName').textContent = currentUser.anonName;
+  document.getElementById('avatarEmoji').textContent = currentUser.avatarEmoji;
+  document.getElementById('realName').value = currentUser.realName || '';
+  document.getElementById('userBio').value = currentUser.bio || '';
+  document.getElementById('bioCount').textContent = (currentUser.bio||'').length;
+  document.getElementById('userEmail').value = currentUser.email || '';
+  document.getElementById('userPhone').value = currentUser.phone || '';
+  document.getElementById('twoFA').checked = currentUser.twoFA || false;
+}
+
+function renderStory() {
+  if (!stories.length) return;
+  const s = stories[currentStoryIdx];
+  document.getElementById('storyAvatarEmoji').textContent = s.avatar;
+  document.getElementById('storyAuthor').textContent = s.author;
+  document.getElementById('storyTime').textContent = s.time;
+  document.getElementById('storyEmotionBadge').textContent = s.emotion;
+  document.getElementById('storyBody').textContent = s.content;
+  document.getElementById('likeCount').textContent = s.likes;
+  document.getElementById('commentCount').textContent = s.comments;
+  document.getElementById('storyCounter').textContent = `${currentStoryIdx+1} / ${stories.length}`;
+  document.getElementById('prevBtn').disabled = currentStoryIdx === 0;
+  document.getElementById('likeBtn').classList.toggle('liked', likedStories.has(currentStoryIdx));
+  const card = document.getElementById('storyCard');
+  card.style.opacity = '0'; card.style.transform = 'translateY(10px)';
+  requestAnimationFrame(() => {
+    card.style.transition = 'opacity 0.3s, transform 0.3s';
+    card.style.opacity = '1'; card.style.transform = 'translateY(0)';
+  });
+}
+
+function setupStoryNav() {
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); }
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (currentStoryIdx < stories.length - 1) { currentStoryIdx++; renderStory(); }
+    else loadMoreStories();
+  });
+  document.getElementById('likeBtn').addEventListener('click', () => {
+    if (likedStories.has(currentStoryIdx)) { likedStories.delete(currentStoryIdx); stories[currentStoryIdx].likes--; }
+    else { likedStories.add(currentStoryIdx); stories[currentStoryIdx].likes++; }
+    renderStory();
+  });
+  // Touch swipe
+  let touchStartX = 0;
+  const card = document.getElementById('storyCard');
+  card.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive:true });
+  card.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) diff > 0 ? document.getElementById('nextBtn').click() : document.getElementById('prevBtn').click();
+  });
+}
+
+async function loadMoreStories() {
+  const loading = document.getElementById('loadingRow');
+  const nextBtn = document.getElementById('nextBtn');
+  loading.classList.add('show');
+  nextBtn.disabled = true;
+  await delay(1400);
+  const EMOJIS = ['🌺','🦋','🌙','⭐','🌈','🦉','🌿','🌊','✨'];
+  const EMOTIONS = ['Joy','Peace','Strength','Wonder','Clarity'];
+  for (let i = 0; i < 5; i++) {
+    stories.push({
+      author: generateAnonName(),
+      avatar: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+      time: `${i+2} days ago`,
+      emotion: EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)],
+      content: "Everyone has a story worth sharing. Every word you put down has the power to reach someone who needed it — maybe just one person, maybe thousands. That's the magic of opening up.",
+      likes: Math.floor(Math.random() * 80),
+      comments: Math.floor(Math.random() * 30),
+    });
+  }
+  loading.classList.remove('show');
+  nextBtn.disabled = false;
+  currentStoryIdx++;
+  renderStory();
+  showToast('More stories loaded ✨','info');
+}
+
+function openStoryPopup(emotion) {
+  if (!currentUser) return showToast('Please sign in to share a story','error');
+  document.getElementById('popupEmotion').textContent = emotion;
+  document.getElementById('storyWriteArea').value = '';
+  document.getElementById('storyCharCount').textContent = '0';
+  showOverlay('storyOverlay');
+}
+
+function quickSubmitStory() {
+  const content = document.getElementById('storyWriteArea').value.trim();
+  if (content.length < 10) return showToast('Please write at least 10 characters 💜','error');
+  const isAnon = document.getElementById('postAnon').checked;
+  const emotion = document.getElementById('popupEmotion').textContent;
+  const story = StoryService.create({
+    title: '', body: content, emotion, visibility: 'everyone',
+    anonymous: isAnon, userId: currentUser.id, userData: currentUser
+  });
+  stories.unshift(story);
+  currentStoryIdx = 0;
+  likedStories = new Set([...likedStories].map(i => i+1));
+  renderStory();
+  hideOverlay('storyOverlay');
+  showToast('Your story has been shared 💜','success');
+}
+
+function saveProfile() {
+  if (!currentUser) return;
+  const updated = AuthService.updateUser(currentUser.id, {
+    realName: document.getElementById('realName').value,
+    bio: document.getElementById('userBio').value,
+    email: document.getElementById('userEmail').value,
+    phone: document.getElementById('userPhone').value,
+    twoFA: document.getElementById('twoFA').checked,
+  });
+  if (updated) {
+    currentUser = updated;
+    showToast('Profile saved ✅','success');
+  }
+}
+
+function saveAvatar() {
+  const selected = document.querySelector('.avatar-opt.selected');
+  if (!selected) return;
+  const emoji = selected.dataset.emoji;
+  const updated = AuthService.updateUser(currentUser.id, { avatarEmoji: emoji, lastAvatarEdit: new Date().toISOString() });
+  if (updated) {
+    currentUser = updated;
+    document.getElementById('avatarEmoji').textContent = emoji;
+    hideOverlay('avatarOverlay');
+    showToast('Avatar updated 🎨','success');
+  }
+}
+
+function logout() {
+  if (!confirm('Log out of HeartSpace?')) return;
+  clearSession();
+  showToast('Goodbye 👋 Come back soon','info');
+  setTimeout(() => navigateTo('auth'), 1500);
+}
+
+/* ─── EDITOR FUNCTIONS ───────────────────────── */
+let editorChapterCount = 2;
+let selectedEditorEmotion = '';
+
+function refreshEditorUI() {
+  if (!currentUser) return;
+  document.getElementById('editorAnonName').textContent = `You'll appear as "${currentUser.anonName}"`;
+  // Load draft
+  const draft = StoryService.getDraft(currentUser.id);
+  if (draft) {
+    document.getElementById('storyTitle').value = draft.title || '';
+    document.getElementById('editorBody').value = draft.body || '';
+    updateWordCount(); updateProgress();
+    document.getElementById('autosaveStatus').innerHTML = '<div class="autosave-dot"></div> Draft restored ✓';
+  }
+}
+
+function updateWordCount() {
+  const text = document.getElementById('editorBody').value.trim();
+  const words = text === '' ? 0 : text.split(/\s+/).length;
+  document.getElementById('wordCount').textContent = words + (words === 1 ? ' word' : ' words');
+}
+
+function updateProgress() {
+  const title = document.getElementById('storyTitle').value.trim().length;
+  const body  = document.getElementById('editorBody').value.trim().length;
+  const pct   = Math.min(100, (title > 0 ? 20 : 0) + Math.min(80, body / 5));
+  document.getElementById('editorProgressBar').style.width = pct + '%';
+}
+
+function selectEditorEmotion(btn) {
+  document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedEditorEmotion = btn.textContent.trim().replace(/[^\w\s]/g,'').trim();
+}
+
+function selectVisibility(opt) {
+  document.querySelectorAll('.vis-option').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+}
+
+function toggleCW(btn) { btn.classList.toggle('selected'); }
+
+function formatText(type) {
+  const ta = document.getElementById('editorBody');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.substring(s, e);
+  let w = sel;
+  if (type === 'bold')      w = `**${sel}**`;
+  else if (type === 'italic')    w = `_${sel}_`;
+  else if (type === 'underline') w = `__${sel}__`;
+  ta.value = ta.value.substring(0,s) + w + ta.value.substring(e);
+  updateWordCount(); updateProgress();
+}
+
+function insertQuote() {
+  const ta = document.getElementById('editorBody');
+  const pos = ta.selectionStart;
+  const q = '\n> ';
+  ta.value = ta.value.substring(0,pos) + q + ta.value.substring(pos);
+  ta.selectionStart = ta.selectionEnd = pos + q.length;
+  ta.focus();
+}
+
+function selectChapter(pill) {
+  document.querySelectorAll('.chapter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+}
+
+function addChapter() {
+  editorChapterCount++;
+  const bar = document.querySelector('.chapter-bar');
+  const addBtn = bar.querySelector('.add-chapter');
+  const pill = document.createElement('div');
+  pill.className = 'chapter-pill';
+  pill.textContent = `Chapter ${editorChapterCount}`;
+  pill.onclick = function() { selectChapter(this); };
+  bar.insertBefore(pill, addBtn);
+  selectChapter(pill);
+}
+
+function saveDraft() {
+  if (!currentUser) return;
+  const as = document.getElementById('autosaveStatus');
+  as.innerHTML = '<div class="autosave-dot"></div> Saving…';
+  StoryService.saveDraft({
+    title: document.getElementById('storyTitle').value,
+    body: document.getElementById('editorBody').value,
+    userId: currentUser.id
+  });
+  setTimeout(() => { as.innerHTML = '<div class="autosave-dot"></div> Draft saved ✓'; }, 600);
+}
+
+function previewStory() {
+  const title = document.getElementById('storyTitle').value.trim();
+  const body  = document.getElementById('editorBody').value.trim();
+  if (!title && !body) return showToast('Nothing to preview yet!','info');
+  showToast(`Preview: "${title || 'Untitled'}" — ${body.split(/\s+/).length} words`,'info');
+}
+
+function publishStory() {
+  const title = document.getElementById('storyTitle').value.trim();
+  const body  = document.getElementById('editorBody').value.trim();
+  if (!title || !body) return showToast('Please add a title and your story before sharing 💜','error');
+  if (!currentUser) return showToast('Please sign in to share','error');
+
+  const isAnon = document.getElementById('editorAnonToggle').classList.contains('on');
+  const visEl  = document.querySelector('.vis-option.selected .vis-text h4');
+  const visibility = visEl ? visEl.textContent : 'Everyone';
+
+  StoryService.create({
+    title, body,
+    emotion: selectedEditorEmotion || 'Story',
+    visibility,
+    anonymous: isAnon,
+    userId: currentUser.id,
+    userData: currentUser
+  });
+
+  // Clear draft
+  let drafts = JSON.parse(localStorage.getItem('hs_drafts') || '[]');
+  localStorage.setItem('hs_drafts', JSON.stringify(drafts.filter(d => d.userId !== currentUser.id)));
+
+  document.getElementById('editorSuccess').classList.add('show');
+}
+
+function resetEditor() {
+  document.getElementById('storyTitle').value = '';
+  document.getElementById('storySubtitle').value = '';
+  document.getElementById('editorBody').value = '';
+  document.getElementById('editorSuccess').classList.remove('show');
+  updateWordCount(); updateProgress();
+  document.getElementById('autosaveStatus').innerHTML = '<div class="autosave-dot"></div> Draft saved';
+}
+
+/* ─── OVERLAY HELPERS ────────────────────────── */
+function showOverlay(id) { document.getElementById(id).classList.add('show'); }
+function hideOverlay(id) { document.getElementById(id).classList.remove('show'); }
+
+/* ─── TOAST ──────────────────────────────────── */
+let _toastTimer;
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  const icons = { success:'✅', error:'❌', info:'💜' };
+  t.innerHTML = `<span>${icons[type]||'💜'}</span> ${msg}`;
+  t.className = `toast ${type} show`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+/* ─── UTIL ───────────────────────────────────── */
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ─── CLOSE OVERLAYS ON BACKDROP ─────────────── */
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+});
+</script>
 </body>
 </html>
+
